@@ -1,0 +1,637 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#0f766e" />
+  <title>Urgencias · Test</title>
+  <style>
+    :root {
+      --bg: #f3f7f6;
+      --card: #ffffff;
+      --text: #17211f;
+      --muted: #66736f;
+      --primary: #0f766e;
+      --primary-dark: #0a5a54;
+      --border: #dce6e3;
+      --ok-bg: #ecfdf5;
+      --ok: #047857;
+      --bad-bg: #fff1f2;
+      --bad: #be123c;
+      --shadow: 0 12px 32px rgba(17, 42, 37, .08);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: linear-gradient(180deg, #edf7f5 0%, var(--bg) 38%, var(--bg) 100%);
+      color: var(--text);
+    }
+
+    .shell {
+      width: min(760px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 30px 0 48px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+
+    .logo {
+      width: 46px;
+      height: 46px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: var(--primary);
+      color: white;
+      font-weight: 900;
+      box-shadow: var(--shadow);
+    }
+
+    .brand h1 { margin: 0; font-size: 1.16rem; }
+    .brand p { margin: 2px 0 0; color: var(--muted); font-size: .9rem; }
+
+    .card {
+      background: var(--card);
+      border: 1px solid rgba(220,230,227,.9);
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+      padding: clamp(20px, 4vw, 34px);
+    }
+
+    .hidden { display: none !important; }
+
+    h2 { margin-top: 0; font-size: clamp(1.45rem, 4vw, 2rem); }
+    p { line-height: 1.55; }
+
+    label { display: block; font-weight: 700; margin: 18px 0 8px; }
+
+    input {
+      width: 100%;
+      padding: 15px 16px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      font: inherit;
+      outline: none;
+      text-transform: uppercase;
+    }
+
+    input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(15,118,110,.1); }
+
+    button {
+      border: 0;
+      border-radius: 14px;
+      font: inherit;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .primary {
+      width: 100%;
+      margin-top: 14px;
+      padding: 14px 18px;
+      color: #fff;
+      background: var(--primary);
+    }
+
+    .primary:hover { background: var(--primary-dark); }
+
+    .error {
+      color: var(--bad);
+      min-height: 1.3em;
+      font-size: .92rem;
+      margin: 10px 0 0;
+    }
+
+    .demo-note {
+      margin-top: 20px;
+      padding: 12px 14px;
+      border-radius: 13px;
+      background: #f8faf9;
+      border: 1px dashed var(--border);
+      color: var(--muted);
+      font-size: .86rem;
+    }
+
+    .topline {
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+      align-items: center;
+      color: var(--muted);
+      font-size: .88rem;
+      margin-bottom: 12px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: #e7f5f2;
+      color: var(--primary-dark);
+      font-weight: 800;
+      font-size: .78rem;
+    }
+
+    .progress-track {
+      height: 8px;
+      border-radius: 999px;
+      background: #e8efed;
+      overflow: hidden;
+      margin-bottom: 24px;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0;
+      background: var(--primary);
+      transition: width .25s ease;
+    }
+
+    .question {
+      font-size: clamp(1.2rem, 3.5vw, 1.55rem);
+      line-height: 1.42;
+      font-weight: 800;
+      margin: 10px 0 22px;
+    }
+
+    .options { display: grid; gap: 11px; }
+
+    .option {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      width: 100%;
+      text-align: left;
+      padding: 14px 15px;
+      background: #fff;
+      color: var(--text);
+      border: 1px solid var(--border);
+      font-weight: 650;
+      line-height: 1.4;
+    }
+
+    .option:hover:not(:disabled) { border-color: #97bcb6; background: #f7fbfa; }
+    .option:disabled { cursor: default; opacity: 1; }
+
+    .letter {
+      flex: 0 0 30px;
+      width: 30px;
+      height: 30px;
+      display: grid;
+      place-items: center;
+      border-radius: 9px;
+      background: #edf3f1;
+      font-weight: 900;
+    }
+
+    .option.correct { border-color: #6ee7b7; background: var(--ok-bg); }
+    .option.correct .letter { background: #d1fae5; color: var(--ok); }
+    .option.incorrect { border-color: #fda4af; background: var(--bad-bg); }
+    .option.incorrect .letter { background: #ffe4e6; color: var(--bad); }
+
+    .feedback {
+      margin-top: 20px;
+      border-radius: 16px;
+      padding: 17px;
+      border: 1px solid var(--border);
+    }
+
+    .feedback.ok { background: var(--ok-bg); border-color: #a7f3d0; }
+    .feedback.bad { background: var(--bad-bg); border-color: #fecdd3; }
+    .feedback-title { font-size: 1.05rem; font-weight: 900; margin-bottom: 8px; }
+    .feedback p { margin: 8px 0 0; }
+
+    .next {
+      width: 100%;
+      margin-top: 18px;
+      padding: 14px 18px;
+      color: #fff;
+      background: #17211f;
+    }
+
+    .result-number {
+      font-size: clamp(2.5rem, 9vw, 4.5rem);
+      font-weight: 950;
+      line-height: 1;
+      margin: 16px 0 8px;
+      color: var(--primary);
+    }
+
+    .small { color: var(--muted); font-size: .9rem; }
+
+    @media (max-width: 520px) {
+      .shell { width: min(100% - 18px, 760px); padding-top: 16px; }
+      .card { border-radius: 18px; padding: 19px; }
+      .brand { margin-bottom: 14px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <div class="brand">
+      <div class="logo">UE</div>
+      <div>
+        <h1>Urgencias · Test</h1>
+        <p>Prototipo de estudio basado en el manual aportado</p>
+      </div>
+    </div>
+
+    <section id="loginCard" class="card">
+      <span class="tag">ACCESO PRIVADO · PROTOTIPO</span>
+      <h2 style="margin-top:14px">Introduce tu código</h2>
+      <p class="small">Esta primera versión sirve para probar el funcionamiento antes de conectar una autenticación segura.</p>
+      <form id="loginForm">
+        <label for="accessCode">Código de acceso</label>
+        <input id="accessCode" autocomplete="off" placeholder="Ej. PRUEBA-2026" />
+        <button class="primary" type="submit">Entrar</button>
+        <p id="loginError" class="error"></p>
+      </form>
+      <div class="demo-note">
+        Para probarla ahora usa <strong>PRUEBA-2026</strong>. Este código está dentro del propio HTML y, por tanto, no constituye seguridad real. La versión definitiva usará validación externa (por ejemplo Supabase).
+      </div>
+    </section>
+
+    <section id="quizCard" class="card hidden">
+      <div class="topline">
+        <span id="category" class="tag"></span>
+        <span id="progressText"></span>
+      </div>
+      <div class="progress-track"><div id="progressBar" class="progress-bar"></div></div>
+      <div id="question" class="question"></div>
+      <div id="options" class="options"></div>
+      <div id="feedback" class="feedback hidden"></div>
+      <button id="nextBtn" class="next hidden" type="button">Siguiente pregunta</button>
+    </section>
+
+    <section id="resultCard" class="card hidden">
+      <span class="tag">TEST COMPLETADO</span>
+      <h2 style="margin-top:14px">Resultado</h2>
+      <div id="resultNumber" class="result-number"></div>
+      <p id="resultText"></p>
+      <button id="restartBtn" class="primary" type="button">Hacer otro test</button>
+    </section>
+  </main>
+
+  <script>
+    // DEMO LOCAL. En la versión definitiva los códigos se validarán en un backend.
+    const ACCESS_CODES = {
+      "PRUEBA-2026": { active: true, name: "Usuario de prueba" }
+    };
+
+    // Prototipo con 20 preguntas del manual aportado por el usuario.
+    // Las explicaciones se muestran únicamente después de responder.
+    const QUESTIONS = [
+      {
+        category: "Soporte vital básico en adultos",
+        question: "En relación con la cánula orofaríngea, señale el enunciado correcto:",
+        options: [
+          "Es un instrumento útil en la apertura de la vía aérea.",
+          "En las maniobras de apertura de la vía aérea sustituye a la apertura de la boca.",
+          "En las maniobras de apertura de la vía aérea sustituye en parte a la hiperextensión del cuello.",
+          "Todas son correctas."
+        ],
+        correct: 3,
+        explanation: "Según el manual, la cánula orofaríngea ayuda a preservar la permeabilidad de la vía aérea, mantiene la boca abierta, evita la caída posterior de la lengua y contribuye parcialmente al efecto de mantener el cuello extendido."
+      },
+      {
+        category: "Soporte vital básico en adultos",
+        question: "La desfibrilación eléctrica:",
+        options: [
+          "Debe realizarse cuanto antes en caso de fibrilación ventricular.",
+          "Inicialmente se emplea en dosis de 600 J.",
+          "Debe posponerse en caso de duda entre asistolia y fibrilación ventricular de grano fino.",
+          "Ninguna es correcta."
+        ],
+        correct: 0,
+        explanation: "El manual señala que la desfibrilación es el tratamiento de la fibrilación ventricular y la taquicardia ventricular sin pulso, y que debe realizarse cuanto antes."
+      },
+      {
+        category: "Soporte vital básico en adultos",
+        question: "En la reanimación cardiopulmonar (RCP) del adulto, ¿cuál de los siguientes enunciados considera correcto?",
+        options: [
+          "Con un reanimador, la secuencia de ventilación/compresión es 2:15.",
+          "Con dos reanimadores, la secuencia de ventilación/compresión es de 1:5.",
+          "Cuando se aplica un dispositivo de vía aérea avanzada, no es necesaria dicha sincronización.",
+          "Todas son ciertas."
+        ],
+        correct: 2,
+        explanation: "El manual indica una relación de 30:2 antes de disponer de vía aérea avanzada. Una vez colocada una vía aérea avanzada, ya no es necesaria la sincronización compresión-ventilación."
+      },
+      {
+        category: "Soporte vital básico en adultos",
+        question: "¿Cuál es el objetivo primario del soporte vital básico sin equipo por parte del primer interviniente en una parada cardiorrespiratoria?",
+        options: [
+          "Oxigenación y reemplazamiento precarios del sistema cardiorrespiratorio del paciente.",
+          "Reinstauración de la respiración y la circulación espontáneas.",
+          "Recuperación de las funciones cerebrales.",
+          "Todas ellas son ciertas."
+        ],
+        correct: 0,
+        explanation: "Según el manual, el objetivo inmediato del soporte vital básico sin equipo es sustituir de forma temporal la función respiratoria y circulatoria para permitir actuaciones posteriores y preservar las funciones cerebrales."
+      },
+      {
+        category: "Soporte vital avanzado en adultos",
+        question: "En relación con las causas reversibles de la RCP en el adulto, señale cuál NO es una de ellas:",
+        options: [
+          "Neumotórax a tensión.",
+          "Trombosis coronaria.",
+          "Hiperpotasemia.",
+          "Hiponatremia."
+        ],
+        correct: 3,
+        explanation: "El manual resume las causas reversibles mediante las H y T. Incluye alteraciones del potasio, pero no considera la hiponatremia una causa reversible clásica de parada."
+      },
+      {
+        category: "Soporte vital avanzado en adultos",
+        question: "¿Cuál es el acceso venoso de elección en una PCR?",
+        options: [
+          "Vía venosa central.",
+          "Vía venosa periférica.",
+          "Vía intraósea.",
+          "Vía endotraqueal."
+        ],
+        correct: 1,
+        explanation: "Según el manual, la vía periférica es habitualmente la más disponible y utilizada. La intraósea se reserva cuando no puede obtenerse acceso intravenoso."
+      },
+      {
+        category: "Soporte vital avanzado en adultos",
+        question: "¿Qué medida considera eficaz al administrar fármacos por vía venosa periférica durante la RCP del adulto?",
+        options: [
+          "Administrar el bolo del fármaco sin otra medida adicional.",
+          "Administrar un bolo de 20 mL de solución salina fisiológica tras administrar el fármaco.",
+          "Descender la extremidad respecto al nivel del tronco durante al menos 10-20 s.",
+          "Administrar siempre el fármaco diluido en 50 mL de suero."
+        ],
+        correct: 1,
+        explanation: "El manual recomienda administrar después del fármaco un bolo de 20 mL de suero fisiológico para favorecer su llegada a la circulación central; también menciona elevar la extremidad durante unos segundos."
+      },
+      {
+        category: "Soporte vital avanzado en adultos",
+        question: "En caso de torsades de pointes asociadas a QT prolongado durante una PCR, está indicada la administración de sulfato de magnesio, en dosis de:",
+        options: ["0,5 g.", "1 g.", "5 g.", "10 g."],
+        correct: 1,
+        explanation: "La respuesta señalada por el manual es 1 g; en su razonamiento describe una dosis de sulfato de magnesio de 1-2 g."
+      },
+      {
+        category: "Soporte vital avanzado en adultos",
+        question: "Ante una PCR en fibrilación ventricular, señale lo cierto respecto a la administración de adrenalina:",
+        options: [
+          "Cuando la segunda descarga eléctrica ha fracasado.",
+          "Cuanto antes.",
+          "Tras cinco descargas eléctricas fallidas.",
+          "Tras la primera descarga eléctrica, tenga o no éxito."
+        ],
+        correct: 0,
+        explanation: "El manual marca como correcta la administración tras fracasar la segunda descarga y señala posteriormente dosis repetidas cada 3-5 minutos."
+      },
+      {
+        category: "Soporte vital pediátrico",
+        question: "Un niño está inconsciente, respira y tiene pulso de 80 lat/min. ¿Cuál es la actitud inmediata más correcta?",
+        options: [
+          "Mantenerlo en decúbito supino con los brazos alineados a lo largo del tronco.",
+          "Pedir ayuda al sistema de emergencias si no se ha realizado antes.",
+          "Abandonar al niño para pedir ayuda.",
+          "Colocarlo en posición lateral de seguridad estable y pedir ayuda al sistema de emergencias si no se ha hecho anteriormente."
+        ],
+        correct: 3,
+        explanation: "Según el manual, si está inconsciente pero respira normalmente y mantiene pulso ≥60 lat/min debe colocarse en posición lateral estable y solicitar ayuda."
+      },
+      {
+        category: "Soporte vital pediátrico",
+        question: "Tras comprobar ausencia de respuesta, de respiración (o solo gasping) y de pulso en un niño, las compresiones y ventilaciones deben iniciarse en ciclos de:",
+        options: [
+          "5:1.",
+          "30:2 en todos los casos.",
+          "15:2 en todos los casos.",
+          "30:2 si hay un reanimador y 15:2 si hay dos reanimadores."
+        ],
+        correct: 3,
+        explanation: "El manual establece 30:2 con un único reanimador y 15:2 cuando hay dos reanimadores."
+      },
+      {
+        category: "Soporte vital pediátrico",
+        question: "En relación con la técnica de compresiones torácicas en el niño, señale lo correcto:",
+        options: [
+          "En lactantes con un único reanimador se realizará siempre la técnica de ambos pulgares abrazando el tórax.",
+          "En lactantes con dos reanimadores debe utilizarse siempre la técnica de dos dedos.",
+          "En niños mayores de 1 año debe utilizarse la técnica de dos dedos.",
+          "En niños mayores de 1 año puede comprimirse con la base de la palma de una mano, ayudándose o no de la otra, en la mitad inferior del esternón."
+        ],
+        correct: 3,
+        explanation: "Según el manual, en mayores de 1 año se utiliza la base de una mano, con ayuda o no de la otra, sobre la mitad inferior del esternón."
+      },
+      {
+        category: "Soporte vital pediátrico",
+        question: "Señale lo correcto en relación con la maniobra de Sellick (compresión cricoidea) durante la RCP en el niño:",
+        options: [
+          "Debe realizarse sistemáticamente durante la intubación endotraqueal.",
+          "Debe realizarse siempre que haya dos reanimadores.",
+          "Solo debe realizarse si es necesario.",
+          "Debe realizarse siempre para aplicar una mascarilla laríngea."
+        ],
+        correct: 2,
+        explanation: "El manual indica que la compresión cricoidea solo debe realizarse si es necesaria y si hay personal disponible para efectuarla sin interferir con otras maniobras."
+      },
+      {
+        category: "Soporte vital pediátrico",
+        question: "Señale la respuesta correcta en relación con la desfibrilación eléctrica en un lactante durante la RCP:",
+        options: [
+          "Es de elección siempre un desfibrilador automático.",
+          "La dosis inicial de descarga cuando se utiliza un desfibrilador manual es de 2 J/kg.",
+          "Tras fracasar la primera descarga, utilizar dosis de 20 J/kg.",
+          "Nunca utilizar un desfibrilador externo automático de adultos."
+        ],
+        correct: 1,
+        explanation: "El manual marca una primera descarga manual de 2 J/kg y una segunda de 4 J/kg, con límites para las sucesivas."
+      },
+      {
+        category: "Hematinetría",
+        question: "La presencia en un análisis de sangre de una cifra de hemoglobina de 7 g/dL y de un volumen corpuscular medio de 75 fL define a la anemia:",
+        options: ["Microcítica.", "Normocítica.", "Macrocítica.", "Normocrómica."],
+        correct: 0,
+        explanation: "Un VCM por debajo de 80 fL define, según el manual, una anemia microcítica."
+      },
+      {
+        category: "Hematinetría",
+        question: "¿Cuál de los siguientes tipos de anemia NO se considera arregenerativa?",
+        options: [
+          "Por déficit de hierro.",
+          "Debida a insuficiencia renal.",
+          "Secundaria a hemólisis.",
+          "Por invasión medular."
+        ],
+        correct: 2,
+        explanation: "La hemólisis es una causa de anemia regenerativa; el déficit de hierro, la insuficiencia renal y la invasión medular se incluyen entre las causas arregenerativas."
+      },
+      {
+        category: "Hematinetría",
+        question: "La aparición de células velludas en la sangre periférica es típica de:",
+        options: [
+          "Hemólisis de fragmentación.",
+          "Linfoma cutáneo de células T.",
+          "Tricoleucemia.",
+          "Anemia megaloblástica."
+        ],
+        correct: 2,
+        explanation: "El manual identifica las células velludas como características de la tricoleucemia."
+      },
+      {
+        category: "Hematinetría",
+        question: "¿Cuál de los siguientes procesos de causa infecciosa NO cursa con neutropenia?",
+        options: ["Fiebre tifoidea.", "Fiebre botonosa.", "Brucelosis.", "Tuberculosis."],
+        correct: 1,
+        explanation: "Según el manual, la fiebre botonosa por Rickettsia conorii suele cursar con leucocitosis, mientras que fiebre tifoidea, brucelosis y tuberculosis pueden asociarse a neutropenia."
+      },
+      {
+        category: "Hematinetría",
+        question: "¿Cuál de los siguientes fármacos NO causa generalmente neutrofilia?",
+        options: ["Corticoides.", "Litio.", "Alopurinol.", "Citotóxicos."],
+        correct: 3,
+        explanation: "Los citotóxicos pueden causar neutropenia. El manual enumera corticoides, litio y alopurinol entre los fármacos que pueden originar neutrofilia."
+      },
+      {
+        category: "Hematinetría",
+        question: "¿Cuál de las siguientes NO se considera una causa fisiológica de eosinofilia?",
+        options: ["Ejercicio físico intenso.", "Habitabilidad en grandes alturas.", "Embarazo.", "Menstruación."],
+        correct: 1,
+        explanation: "El manual incluye ejercicio intenso, embarazo y menstruación entre las causas fisiológicas de eosinofilia. Vivir a gran altitud se relaciona más con neutrofilia fisiológica."
+      }
+    ];
+
+    const loginCard = document.getElementById('loginCard');
+    const quizCard = document.getElementById('quizCard');
+    const resultCard = document.getElementById('resultCard');
+    const loginForm = document.getElementById('loginForm');
+    const accessCode = document.getElementById('accessCode');
+    const loginError = document.getElementById('loginError');
+    const categoryEl = document.getElementById('category');
+    const progressText = document.getElementById('progressText');
+    const progressBar = document.getElementById('progressBar');
+    const questionEl = document.getElementById('question');
+    const optionsEl = document.getElementById('options');
+    const feedbackEl = document.getElementById('feedback');
+    const nextBtn = document.getElementById('nextBtn');
+    const restartBtn = document.getElementById('restartBtn');
+    const resultNumber = document.getElementById('resultNumber');
+    const resultText = document.getElementById('resultText');
+
+    let test = [];
+    let current = 0;
+    let score = 0;
+    let answered = false;
+
+    function shuffle(array) {
+      const copy = [...array];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    loginForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const code = accessCode.value.trim().toUpperCase();
+      if (!ACCESS_CODES[code] || !ACCESS_CODES[code].active) {
+        loginError.textContent = 'Código no válido o desactivado.';
+        return;
+      }
+      loginError.textContent = '';
+      loginCard.classList.add('hidden');
+      startTest();
+    });
+
+    function startTest() {
+      test = shuffle(QUESTIONS);
+      current = 0;
+      score = 0;
+      answered = false;
+      resultCard.classList.add('hidden');
+      quizCard.classList.remove('hidden');
+      renderQuestion();
+    }
+
+    function renderQuestion() {
+      answered = false;
+      const q = test[current];
+      categoryEl.textContent = q.category;
+      progressText.textContent = `Pregunta ${current + 1} de ${test.length}`;
+      progressBar.style.width = `${((current + 1) / test.length) * 100}%`;
+      questionEl.textContent = q.question;
+      feedbackEl.className = 'feedback hidden';
+      feedbackEl.innerHTML = '';
+      nextBtn.classList.add('hidden');
+      nextBtn.textContent = current === test.length - 1 ? 'Ver resultado' : 'Siguiente pregunta';
+
+      optionsEl.innerHTML = '';
+      q.options.forEach((option, index) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'option';
+        btn.innerHTML = `<span class="letter">${String.fromCharCode(65 + index)}</span><span>${option}</span>`;
+        btn.addEventListener('click', () => answer(index));
+        optionsEl.appendChild(btn);
+      });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function answer(selectedIndex) {
+      if (answered) return;
+      answered = true;
+      const q = test[current];
+      const buttons = [...optionsEl.querySelectorAll('.option')];
+      buttons.forEach((btn, idx) => {
+        btn.disabled = true;
+        if (idx === q.correct) btn.classList.add('correct');
+      });
+
+      const isCorrect = selectedIndex === q.correct;
+      if (isCorrect) {
+        score++;
+      } else {
+        buttons[selectedIndex].classList.add('incorrect');
+      }
+
+      feedbackEl.classList.remove('hidden');
+      feedbackEl.classList.add(isCorrect ? 'ok' : 'bad');
+      const correctLetter = String.fromCharCode(65 + q.correct);
+      feedbackEl.innerHTML = `
+        <div class="feedback-title">${isCorrect ? '✅ Correcta' : '❌ Incorrecta'}</div>
+        <p><strong>Respuesta correcta: ${correctLetter}.</strong> ${q.options[q.correct]}</p>
+        <p>${q.explanation}</p>
+      `;
+      nextBtn.classList.remove('hidden');
+    }
+
+    nextBtn.addEventListener('click', () => {
+      if (!answered) return;
+      if (current < test.length - 1) {
+        current++;
+        renderQuestion();
+      } else {
+        showResult();
+      }
+    });
+
+    function showResult() {
+      quizCard.classList.add('hidden');
+      resultCard.classList.remove('hidden');
+      const pct = Math.round((score / test.length) * 100);
+      resultNumber.textContent = `${score}/${test.length}`;
+      resultText.textContent = `Has obtenido un ${pct}% de respuestas correctas.`;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    restartBtn.addEventListener('click', startTest);
+  </script>
+</body>
+</html>
