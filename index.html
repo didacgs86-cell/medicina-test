@@ -1,0 +1,2095 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#0f766e" />
+  <title>Urgencias · Entrenamiento</title>
+  <style>
+    :root {
+      --bg: #f3f7f6;
+      --card: #ffffff;
+      --text: #17211f;
+      --muted: #66736f;
+      --primary: #0f766e;
+      --primary-dark: #0a5a54;
+      --border: #dce6e3;
+      --ok-bg: #ecfdf5;
+      --ok: #047857;
+      --bad-bg: #fff1f2;
+      --bad: #be123c;
+      --shadow: 0 12px 32px rgba(17, 42, 37, .08);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: linear-gradient(180deg, #edf7f5 0%, var(--bg) 38%, var(--bg) 100%);
+      color: var(--text);
+    }
+
+    .shell {
+      width: min(760px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 30px 0 48px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+
+    .logo {
+      width: 46px;
+      height: 46px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: var(--primary);
+      color: white;
+      font-weight: 900;
+      box-shadow: var(--shadow);
+    }
+
+    .brand h1 { margin: 0; font-size: 1.16rem; }
+    .brand p { margin: 2px 0 0; color: var(--muted); font-size: .9rem; }
+
+    .card {
+      background: var(--card);
+      border: 1px solid rgba(220,230,227,.9);
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+      padding: clamp(20px, 4vw, 34px);
+    }
+
+    .hidden { display: none !important; }
+
+    h2 { margin-top: 0; font-size: clamp(1.45rem, 4vw, 2rem); }
+    p { line-height: 1.55; }
+
+    label { display: block; font-weight: 700; margin: 18px 0 8px; }
+
+    input {
+      width: 100%;
+      padding: 15px 16px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      font: inherit;
+      outline: none;
+      text-transform: uppercase;
+    }
+
+    input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(15,118,110,.1); }
+
+    button {
+      border: 0;
+      border-radius: 14px;
+      font: inherit;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .primary {
+      width: 100%;
+      margin-top: 14px;
+      padding: 14px 18px;
+      color: #fff;
+      background: var(--primary);
+    }
+
+    .primary:hover:not(:disabled) { background: var(--primary-dark); }
+    .primary:disabled { opacity: .65; cursor: wait; }
+
+    .error {
+      color: var(--bad);
+      min-height: 1.3em;
+      font-size: .92rem;
+      margin: 10px 0 0;
+    }
+
+    .demo-note {
+      margin-top: 20px;
+      padding: 12px 14px;
+      border-radius: 13px;
+      background: #f8faf9;
+      border: 1px dashed var(--border);
+      color: var(--muted);
+      font-size: .86rem;
+    }
+
+    .topline {
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+      align-items: center;
+      color: var(--muted);
+      font-size: .88rem;
+      margin-bottom: 12px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: #e7f5f2;
+      color: var(--primary-dark);
+      font-weight: 800;
+      font-size: .78rem;
+    }
+
+    .progress-track {
+      height: 8px;
+      border-radius: 999px;
+      background: #e8efed;
+      overflow: hidden;
+      margin-bottom: 24px;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0;
+      background: var(--primary);
+      transition: width .25s ease;
+    }
+
+    .question {
+      font-size: clamp(1.2rem, 3.5vw, 1.55rem);
+      line-height: 1.42;
+      font-weight: 800;
+      margin: 10px 0 22px;
+    }
+
+    .options { display: grid; gap: 11px; }
+
+    .option {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      width: 100%;
+      text-align: left;
+      padding: 14px 15px;
+      background: #fff;
+      color: var(--text);
+      border: 1px solid var(--border);
+      font-weight: 650;
+      line-height: 1.4;
+    }
+
+    .option:hover:not(:disabled) { border-color: #97bcb6; background: #f7fbfa; }
+    .option:disabled { cursor: default; opacity: 1; }
+
+    .letter {
+      flex: 0 0 30px;
+      width: 30px;
+      height: 30px;
+      display: grid;
+      place-items: center;
+      border-radius: 9px;
+      background: #edf3f1;
+      font-weight: 900;
+    }
+
+    .option.correct { border-color: #6ee7b7; background: var(--ok-bg); }
+    .option.correct .letter { background: #d1fae5; color: var(--ok); }
+    .option.incorrect { border-color: #fda4af; background: var(--bad-bg); }
+    .option.incorrect .letter { background: #ffe4e6; color: var(--bad); }
+
+    .feedback {
+      margin-top: 20px;
+      border-radius: 16px;
+      padding: 17px;
+      border: 1px solid var(--border);
+    }
+
+    .feedback.ok { background: var(--ok-bg); border-color: #a7f3d0; }
+    .feedback.bad { background: var(--bad-bg); border-color: #fecdd3; }
+    .feedback-title { font-size: 1.05rem; font-weight: 900; margin-bottom: 8px; }
+    .feedback p { margin: 8px 0 0; }
+
+    .test-community-stats {
+      margin-top: 18px;
+      padding: 16px;
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      background: rgba(255,255,255,.72);
+    }
+
+    .test-community-title {
+      font-weight: 900;
+      margin-bottom: 4px;
+    }
+
+    .test-community-subtitle {
+      color: var(--muted);
+      font-size: .84rem;
+      margin-bottom: 13px;
+    }
+
+    .test-stat-row {
+      display: grid;
+      grid-template-columns: 24px 1fr 82px;
+      align-items: center;
+      gap: 9px;
+      margin: 8px 0;
+    }
+
+    .test-stat-letter {
+      font-weight: 950;
+    }
+
+    .test-stat-track {
+      height: 9px;
+      border-radius: 999px;
+      background: #e7eeec;
+      overflow: hidden;
+    }
+
+    .test-stat-fill {
+      height: 100%;
+      border-radius: inherit;
+      background: var(--primary);
+    }
+
+    .test-stat-value {
+      text-align: right;
+      color: var(--muted);
+      font-size: .82rem;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .test-stat-summary {
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 18px;
+      font-size: .9rem;
+    }
+
+    .next {
+      width: 100%;
+      margin-top: 18px;
+      padding: 14px 18px;
+      color: #fff;
+      background: #17211f;
+    }
+
+    .result-number {
+      font-size: clamp(2.5rem, 9vw, 4.5rem);
+      font-weight: 950;
+      line-height: 1;
+      margin: 16px 0 8px;
+      color: var(--primary);
+    }
+
+    .small { color: var(--muted); font-size: .9rem; }
+
+    .history-mode-card {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid #d8c7ae;
+      background:
+        radial-gradient(circle at 92% 10%, rgba(179, 137, 78, .18), transparent 26%),
+        linear-gradient(135deg, #fffdf8 0%, #f7f0e5 100%);
+      box-shadow: 0 10px 28px rgba(75, 57, 34, .08);
+    }
+
+    .history-mode-card::before,
+    .history-mode-card::after {
+      content: "";
+      position: absolute;
+      right: 18px;
+      width: 62px;
+      height: 42px;
+      border: 1px solid rgba(143, 105, 55, .20);
+      border-radius: 8px;
+      background: rgba(255,255,255,.38);
+      pointer-events: none;
+    }
+
+    .history-mode-card::before {
+      top: 20px;
+      transform: rotate(7deg);
+    }
+
+    .history-mode-card::after {
+      top: 25px;
+      right: 24px;
+      transform: rotate(-2deg);
+    }
+
+    .history-mode-card:hover {
+      border-color: #b28a55;
+      transform: translateY(-1px);
+      box-shadow: 0 14px 34px rgba(75, 57, 34, .12);
+    }
+
+    .history-menu-inner {
+      width: 100%;
+      position: relative;
+      z-index: 1;
+    }
+
+    .history-menu-topline,
+    .history-menu-footer,
+    .history-hero-row,
+    .history-section-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .history-menu-badge,
+    .history-eyebrow,
+    .history-empty-mark {
+      display: inline-block;
+      font-size: .69rem;
+      letter-spacing: .14em;
+      font-weight: 900;
+      color: #7d5b2f;
+    }
+
+    .history-menu-mark {
+      font-size: 1.15rem;
+      color: #8a6535;
+    }
+
+    .history-menu-title {
+      margin-top: 13px;
+      color: #2f2a23;
+    }
+
+    .history-menu-desc {
+      color: #716558;
+      max-width: 650px;
+    }
+
+    .history-menu-footer {
+      margin-top: 16px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(121, 87, 44, .16);
+      color: #756756;
+      font-size: .84rem;
+      font-weight: 700;
+    }
+
+    .history-menu-cta {
+      color: #735129;
+      font-weight: 900;
+    }
+
+    .history-card {
+      padding: 0;
+      overflow: hidden;
+    }
+
+    .history-hero {
+      padding: clamp(22px, 5vw, 36px);
+      background:
+        radial-gradient(circle at 87% 14%, rgba(180, 139, 81, .18), transparent 24%),
+        linear-gradient(145deg, #fffdf9 0%, #f6eee1 100%);
+      border-bottom: 1px solid #e5d8c7;
+    }
+
+    .history-hero h2 {
+      margin: 8px 0 8px;
+      font-size: clamp(1.6rem, 4vw, 2.25rem);
+      letter-spacing: -.02em;
+      color: #2d2924;
+    }
+
+    .history-hero p {
+      margin: 0;
+      max-width: 650px;
+      color: #74695c;
+      line-height: 1.6;
+    }
+
+    .history-counter {
+      flex: 0 0 auto;
+      min-width: 92px;
+      padding: 14px 18px;
+      text-align: center;
+      border: 1px solid rgba(121, 87, 44, .18);
+      border-radius: 16px;
+      background: rgba(255,255,255,.55);
+      backdrop-filter: blur(4px);
+    }
+
+    .history-counter span {
+      display: block;
+      font-size: 1.8rem;
+      line-height: 1;
+      font-weight: 950;
+      color: #72512b;
+    }
+
+    .history-counter small {
+      display: block;
+      margin-top: 5px;
+      color: #7d6f60;
+      font-weight: 800;
+    }
+
+    .history-search-wrap {
+      margin-top: 24px;
+    }
+
+    .history-search-wrap label {
+      display: block;
+      margin-bottom: 7px;
+      font-size: .78rem;
+      font-weight: 900;
+      color: #665847;
+    }
+
+    .history-search-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255,255,255,.82);
+      border: 1px solid #d8c9b5;
+      border-radius: 14px;
+      padding: 0 13px;
+    }
+
+    .history-search-box:focus-within {
+      border-color: #9a7545;
+      box-shadow: 0 0 0 3px rgba(154, 117, 69, .10);
+    }
+
+    .history-search-icon {
+      font-size: 1.2rem;
+      color: #80633f;
+    }
+
+    .history-search-box input {
+      width: 100%;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      padding: 13px 0;
+      font: inherit;
+      color: var(--text);
+    }
+
+    .history-section-title {
+      padding: 22px clamp(22px, 5vw, 36px) 8px;
+      color: #6e5b43;
+      font-size: .78rem;
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .history-section-rule {
+      height: 1px;
+      flex: 1;
+      background: #e7ddd0;
+    }
+
+    .history-list {
+      display: grid;
+      gap: 13px;
+      padding: 10px clamp(22px, 5vw, 36px) 26px;
+    }
+
+    .history-item {
+      position: relative;
+      width: 100%;
+      text-align: left;
+      padding: 18px 54px 18px 18px;
+      border: 1px solid #e1d6c8;
+      border-radius: 16px;
+      background: #fff;
+      color: var(--text);
+      box-shadow: 0 5px 18px rgba(67, 53, 36, .045);
+    }
+
+    .history-item::after {
+      content: "→";
+      position: absolute;
+      right: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.2rem;
+      color: #987244;
+      transition: transform .18s ease;
+    }
+
+    .history-item:hover {
+      border-color: #b99568;
+      background: #fffdf9;
+      transform: translateY(-1px);
+      box-shadow: 0 9px 24px rgba(67, 53, 36, .08);
+    }
+
+    .history-item:hover::after {
+      transform: translate(3px, -50%);
+    }
+
+    .history-item-date {
+      display: inline-block;
+      color: #835f33;
+      background: #f7efe3;
+      border: 1px solid #eadbc6;
+      border-radius: 999px;
+      padding: 4px 9px;
+      font-size: .74rem;
+      font-weight: 900;
+      margin-bottom: 9px;
+    }
+
+    .history-item-title {
+      font-weight: 950;
+      font-size: 1.02rem;
+      margin-bottom: 6px;
+      color: #2f2a24;
+    }
+
+    .history-item-preview {
+      color: #746b61;
+      font-size: .9rem;
+      line-height: 1.5;
+    }
+
+    .history-empty {
+      margin: 12px clamp(22px, 5vw, 36px) 24px;
+      padding: 26px 20px;
+      text-align: center;
+      border: 1px dashed #d9c9b5;
+      border-radius: 16px;
+      background: #fffdf9;
+    }
+
+    .history-empty h3 {
+      margin: 8px 0 6px;
+    }
+
+    .history-empty p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .history-back {
+      margin: 0 clamp(22px, 5vw, 36px) 30px;
+    }
+
+    .case-image-wrap {
+      margin: 20px 0 24px;
+    }
+
+    .case-image {
+      display: block;
+      width: 100%;
+      max-height: 560px;
+      object-fit: contain;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      background: #f7faf9;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, .05);
+    }
+
+    .case-image-caption {
+      margin-top: 9px;
+      color: var(--muted);
+      font-size: .85rem;
+      line-height: 1.45;
+      text-align: center;
+    }
+
+    .case-date {
+      color: var(--muted);
+      font-size: .88rem;
+      font-weight: 700;
+      margin-top: 8px;
+    }
+
+    .case-text {
+      margin: 20px 0 22px;
+      padding: 18px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: #f8fbfa;
+      white-space: pre-wrap;
+      line-height: 1.65;
+      font-size: 1.02rem;
+    }
+
+    .case-status {
+      margin-top: 16px;
+      color: var(--muted);
+      font-size: .92rem;
+    }
+
+    .vote-box {
+      margin-top: 20px;
+      padding: 17px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: #f8fbfa;
+    }
+
+    .case-personal-result {
+      margin-top: 20px;
+      padding: 26px 20px;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: #f8fbfa;
+      text-align: center;
+    }
+
+    .case-personal-result h3 {
+      margin: 0 0 8px;
+      font-size: 1.35rem;
+    }
+
+    .case-score-number {
+      font-size: clamp(3rem, 12vw, 5rem);
+      font-weight: 950;
+      line-height: 1;
+      margin: 18px 0 8px;
+      color: var(--primary);
+    }
+
+    .case-score-detail {
+      font-size: 1.05rem;
+      font-weight: 800;
+      margin-bottom: 14px;
+    }
+
+    .case-score-breakdown {
+      display: flex;
+      justify-content: center;
+      gap: 18px;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: .95rem;
+    }
+
+    .vote-title {
+      font-weight: 900;
+      margin-bottom: 12px;
+    }
+
+    .vote-row {
+      display: grid;
+      grid-template-columns: 26px 1fr 52px;
+      gap: 10px;
+      align-items: center;
+      margin: 9px 0;
+      font-size: .92rem;
+    }
+
+    .vote-track {
+      height: 9px;
+      border-radius: 999px;
+      background: #e5ecea;
+      overflow: hidden;
+    }
+
+    .vote-fill {
+      height: 100%;
+      background: var(--primary);
+      border-radius: 999px;
+    }
+
+    .mode-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 22px;
+    }
+
+    .mode-card {
+      width: 100%;
+      min-height: 170px;
+      padding: 22px;
+      text-align: left;
+      background: #fff;
+      border: 1px solid var(--border);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform .15s ease, border-color .15s ease, box-shadow .15s ease;
+    }
+
+    .mode-card:hover {
+      transform: translateY(-2px);
+      border-color: #97bcb6;
+      box-shadow: 0 12px 28px rgba(17, 42, 37, .07);
+    }
+
+    .mode-title {
+      font-size: 1.18rem;
+      font-weight: 900;
+      margin-bottom: 8px;
+    }
+
+    .mode-desc {
+      color: var(--muted);
+      font-size: .92rem;
+      line-height: 1.5;
+      font-weight: 500;
+    }
+
+    .mode-arrow {
+      margin-top: 18px;
+      color: var(--primary);
+      font-weight: 900;
+    }
+
+    .secondary {
+      width: 100%;
+      margin-top: 12px;
+      padding: 13px 18px;
+      color: var(--text);
+      background: #f7faf9;
+      border: 1px solid var(--border);
+    }
+
+    .secondary:hover { background: #eef5f3; }
+
+    .legal-footer {
+      margin-top: 24px;
+      padding: 18px 8px 0;
+      text-align: center;
+      color: var(--muted);
+      font-size: .86rem;
+    }
+
+    .legal-footer p {
+      margin: 0 0 8px;
+    }
+
+    .legal-links {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 8px 14px;
+    }
+
+    .legal-link {
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: var(--primary);
+      font: inherit;
+      font-weight: 700;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      cursor: pointer;
+    }
+
+    .legal-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: rgba(8, 20, 18, .58);
+      padding: 18px;
+      overflow-y: auto;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+    }
+
+    .legal-panel {
+      width: min(760px, 100%);
+      margin: 24px auto;
+      background: var(--card);
+      border-radius: 22px;
+      box-shadow: 0 24px 70px rgba(0, 0, 0, .22);
+      border: 1px solid var(--border);
+      padding: clamp(20px, 4vw, 34px);
+    }
+
+    .legal-panel h2 {
+      margin-bottom: 18px;
+    }
+
+    .legal-panel h3 {
+      margin-top: 24px;
+      margin-bottom: 8px;
+      font-size: 1rem;
+    }
+
+    .legal-panel p,
+    .legal-panel li {
+      line-height: 1.6;
+    }
+
+    .legal-panel ul {
+      padding-left: 22px;
+    }
+
+    .legal-close {
+      margin-top: 22px;
+      padding: 12px 16px;
+      background: #eef5f3;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .legal-close:hover {
+      background: #e4efec;
+    }
+
+    .legal-email {
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    @media (max-width: 620px) {
+      .mode-grid { grid-template-columns: 1fr; }
+      .mode-card { min-height: 140px; }
+
+      .history-hero-row {
+        align-items: flex-start;
+      }
+
+      .history-counter {
+        min-width: 76px;
+        padding: 12px 13px;
+      }
+
+      .history-menu-footer {
+        align-items: flex-end;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .shell { width: min(100% - 18px, 760px); padding-top: 16px; }
+      .card { border-radius: 18px; padding: 19px; }
+      .brand { margin-bottom: 14px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <div class="brand">
+      <div class="logo">UE</div>
+      <div>
+        <h1>Urgencias · Entrenamiento</h1>
+        <p>Casos clínicos y preguntas test de medicina de urgencias</p>
+        <p style="margin-top:6px; font-size:0.88rem; opacity:0.8;">
+          Creado por Didac G.S. · Médico de urgencias
+        </p>
+      </div>
+    </div>
+
+    <section id="loginCard" class="card">
+      <span class="tag">ACCESO PRIVADO</span>
+      <h2 style="margin-top:14px">Introduce tu código</h2>
+      <p class="small">Introduce el código privado que te han facilitado para acceder.</p>
+      <form id="loginForm">
+        <label for="accessCode">Código de acceso</label>
+        <input id="accessCode" autocomplete="off" placeholder="Introduce tu código" />
+        <button class="primary" type="submit">Entrar</button>
+        <p id="loginError" class="error"></p>
+      </form>
+    </section>
+
+    <section id="menuCard" class="card hidden">
+      <span class="tag">MENÚ PRINCIPAL</span>
+      <h2 style="margin-top:14px">¿Qué quieres hacer?</h2>
+      <p class="small">Escoge uno de los tres modos de entrenamiento.</p>
+
+      <div class="mode-grid">
+        <button id="caseModeBtn" class="mode-card" type="button">
+          <div>
+            <div class="mode-title">Caso clínico del día</div>
+            <div class="mode-desc">Responde el caso clínico publicado hoy y compara tu respuesta con la del resto.</div>
+          </div>
+          <div class="mode-arrow">Entrar →</div>
+        </button>
+
+        <button id="historyModeBtn" class="mode-card history-mode-card" type="button">
+          <div class="history-menu-inner">
+            <div class="history-menu-topline">
+              <span class="history-menu-badge">ARCHIVO CLÍNICO</span>
+              <span class="history-menu-mark">↗</span>
+            </div>
+            <div class="mode-title history-menu-title">Historial de casos clínicos</div>
+            <div class="mode-desc history-menu-desc">
+              Revisa casos anteriores, vuelve a resolverlos y compara tus decisiones con las del resto.
+            </div>
+            <div class="history-menu-footer">
+              <span>Casos anteriores</span>
+              <span class="history-menu-cta">Explorar archivo →</span>
+            </div>
+          </div>
+        </button>
+
+        <button id="testModeBtn" class="mode-card" type="button">
+          <div>
+            <div class="mode-title">Modo preguntas test</div>
+            <div class="mode-desc">Responde las preguntas tipo test disponibles y recibe la corrección después de contestar.</div>
+          </div>
+          <div class="mode-arrow">Empezar test →</div>
+        </button>
+      </div>
+    </section>
+
+    <section id="historyCard" class="card history-card hidden">
+      <div class="history-hero">
+        <div class="history-eyebrow">ARCHIVO CLÍNICO</div>
+        <div class="history-hero-row">
+          <div>
+            <h2>Historial de casos clínicos</h2>
+            <p>Un archivo para repasar decisiones de urgencias una vez terminado el caso del día.</p>
+          </div>
+          <div class="history-counter" aria-label="Número de casos en el historial">
+            <span id="historyCount">0</span>
+            <small>casos</small>
+          </div>
+        </div>
+
+        <div class="history-search-wrap">
+          <label for="historySearch">Buscar en el historial</label>
+          <div class="history-search-box">
+            <span class="history-search-icon" aria-hidden="true">⌕</span>
+            <input id="historySearch" type="search" placeholder="Título, fecha o contenido del caso…" autocomplete="off">
+          </div>
+        </div>
+      </div>
+
+      <div id="historyLoading" class="case-status">Cargando historial…</div>
+
+      <div class="history-section-title">
+        <span>Casos anteriores</span>
+        <span class="history-section-rule"></span>
+      </div>
+
+      <div id="historyList" class="history-list"></div>
+
+      <div id="historyEmpty" class="history-empty hidden">
+        <div class="history-empty-mark">ARCHIVO</div>
+        <h3>Todavía no hay casos anteriores</h3>
+        <p>Cuando termine el día de un caso clínico, aparecerá automáticamente aquí.</p>
+      </div>
+
+      <div id="historyNoResults" class="history-empty hidden">
+        <div class="history-empty-mark">SIN RESULTADOS</div>
+        <h3>No encontramos ningún caso</h3>
+        <p>Prueba con otro término de búsqueda.</p>
+      </div>
+
+      <button id="historyBackBtn" class="secondary history-back" type="button">← Volver al menú</button>
+    </section>
+
+    <section id="caseCard" class="card hidden">
+      <span id="caseTag" class="tag">CASO CLÍNICO DEL DÍA</span>
+      <h2 id="caseTitle" style="margin-top:14px">Caso clínico del día</h2>
+      <div id="caseDate" class="case-date"></div>
+
+      <div id="caseLoading" class="case-status">Cargando caso clínico…</div>
+
+      <div id="caseContent" class="hidden">
+        <div id="caseText" class="case-text"></div>
+
+        <figure id="caseImageWrap" class="case-image-wrap hidden">
+          <img id="caseImage" class="case-image" alt="">
+          <figcaption id="caseImageCaption" class="case-image-caption"></figcaption>
+        </figure>
+
+        <div id="caseProgress" class="small" style="margin-bottom:10px;"></div>
+        <h3 id="caseQuestion"></h3>
+
+        <div id="caseOptions" class="options"></div>
+        <div id="caseFeedback" class="feedback hidden"></div>
+        <div id="caseVotes" class="vote-box hidden"></div>
+
+        <div id="casePersonalResult" class="case-personal-result hidden"></div>
+
+        <button id="caseNextBtn" class="next hidden" type="button">
+          Siguiente pregunta
+        </button>
+      </div>
+
+      <div id="caseEmpty" class="hidden">
+        <p>No hay ningún caso clínico publicado para hoy.</p>
+        <p class="small">Cuando publiques un caso en Supabase con la fecha de hoy aparecerá automáticamente aquí.</p>
+      </div>
+
+      <button id="caseBackBtn" class="secondary" type="button">← Volver al menú</button>
+    </section>
+
+    <section id="quizCard" class="card hidden">
+      <div class="topline">
+        <span id="category" class="tag"></span>
+        <span id="progressText"></span>
+      </div>
+      <div class="progress-track"><div id="progressBar" class="progress-bar"></div></div>
+      <div id="question" class="question"></div>
+      <div id="options" class="options"></div>
+      <div id="feedback" class="feedback hidden"></div>
+      <button id="nextBtn" class="next hidden" type="button">Siguiente pregunta</button>
+      <button id="quizBackBtn" class="secondary" type="button">← Volver al menú</button>
+    </section>
+
+    <section id="resultCard" class="card hidden">
+      <span class="tag">TEST COMPLETADO</span>
+      <h2 style="margin-top:14px">Resultado</h2>
+      <div id="resultNumber" class="result-number"></div>
+      <p id="resultText"></p>
+      <button id="restartBtn" class="primary" type="button">Hacer otro test</button>
+      <button id="resultBackBtn" class="secondary" type="button">← Volver al menú</button>
+    </section>
+
+    <footer class="legal-footer">
+      <p>Creado por Didac G.S. · Médico de urgencias</p>
+      <div class="legal-links" aria-label="Información legal">
+        <button class="legal-link" type="button" data-legal="legal">Aviso legal</button>
+        <button class="legal-link" type="button" data-legal="privacy">Privacidad</button>
+        <button class="legal-link" type="button" data-legal="medical">Aviso médico</button>
+      </div>
+    </footer>
+  </main>
+
+  <div id="legalModal" class="legal-modal hidden" role="dialog" aria-modal="true" aria-labelledby="legalModalTitle">
+    <div class="legal-panel">
+      <div id="legalModalContent"></div>
+      <button id="legalCloseBtn" class="legal-close" type="button">← Volver</button>
+    </div>
+  </div>
+
+  <script>
+    const SUPABASE_URL = "https://bqxysomokzwlpkkxybny.supabase.co";
+    const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_SJy9aIyYjn4dvr_h1S7GLw_mxDxGfoz";
+
+    async function rpc(nombre, payload) {
+      const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/${nombre}`, {
+        method: 'POST',
+        headers: {
+          'apikey': SUPABASE_PUBLISHABLE_KEY,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+      if (!response.ok) {
+        const detail = await response.text();
+        throw new Error(`${nombre}: ${response.status} ${detail}`);
+      }
+      return await response.json();
+    }
+
+    const loginCard = document.getElementById('loginCard');
+    const menuCard = document.getElementById('menuCard');
+    const historyCard = document.getElementById('historyCard');
+    const caseCard = document.getElementById('caseCard');
+    const quizCard = document.getElementById('quizCard');
+    const resultCard = document.getElementById('resultCard');
+    const legalModal = document.getElementById('legalModal');
+    const legalModalContent = document.getElementById('legalModalContent');
+    const legalCloseBtn = document.getElementById('legalCloseBtn');
+    const loginForm = document.getElementById('loginForm');
+    const accessCode = document.getElementById('accessCode');
+    const loginError = document.getElementById('loginError');
+    const categoryEl = document.getElementById('category');
+    const progressText = document.getElementById('progressText');
+    const progressBar = document.getElementById('progressBar');
+    const questionEl = document.getElementById('question');
+    const optionsEl = document.getElementById('options');
+    const feedbackEl = document.getElementById('feedback');
+    const nextBtn = document.getElementById('nextBtn');
+    const restartBtn = document.getElementById('restartBtn');
+    const testModeBtn = document.getElementById('testModeBtn');
+    const caseModeBtn = document.getElementById('caseModeBtn');
+    const historyModeBtn = document.getElementById('historyModeBtn');
+    const historyBackBtn = document.getElementById('historyBackBtn');
+    const historyLoading = document.getElementById('historyLoading');
+    const historyList = document.getElementById('historyList');
+    const historyEmpty = document.getElementById('historyEmpty');
+    const historyNoResults = document.getElementById('historyNoResults');
+    const historyCount = document.getElementById('historyCount');
+    const historySearch = document.getElementById('historySearch');
+    const caseBackBtn = document.getElementById('caseBackBtn');
+    const caseTag = document.getElementById('caseTag');
+    const caseTitle = document.getElementById('caseTitle');
+    const caseDate = document.getElementById('caseDate');
+    const caseLoading = document.getElementById('caseLoading');
+    const caseContent = document.getElementById('caseContent');
+    const caseText = document.getElementById('caseText');
+    const caseImageWrap = document.getElementById('caseImageWrap');
+    const caseImage = document.getElementById('caseImage');
+    const caseImageCaption = document.getElementById('caseImageCaption');
+    const caseProgress = document.getElementById('caseProgress');
+    const caseQuestion = document.getElementById('caseQuestion');
+    const caseOptions = document.getElementById('caseOptions');
+    const caseFeedback = document.getElementById('caseFeedback');
+    const caseVotes = document.getElementById('caseVotes');
+    const casePersonalResult = document.getElementById('casePersonalResult');
+    const caseNextBtn = document.getElementById('caseNextBtn');
+    const caseEmpty = document.getElementById('caseEmpty');
+    const quizBackBtn = document.getElementById('quizBackBtn');
+    const resultBackBtn = document.getElementById('resultBackBtn');
+    const resultNumber = document.getElementById('resultNumber');
+    const resultText = document.getElementById('resultText');
+
+    const ACCESS_STORAGE_KEY = 'urgencias_access_code';
+    let currentAccessCode = '';
+    let test = [];
+    let current = 0;
+    let score = 0;
+    let scoredAnswered = 0;
+    let annulled = 0;
+    let answered = false;
+
+    let currentCase = null;
+    let caseQuestions = [];
+    let caseQuestionIndex = 0;
+    let currentCaseQuestion = null;
+    let caseAnswered = false;
+    let caseCorrectCount = 0;
+    let caseShowingResult = false;
+    let caseOrigin = 'daily';
+    let historyCases = [];
+
+    function getVoterId() {
+      let id = localStorage.getItem('urgencias_voter_id');
+      if (!id) {
+        if (window.crypto && crypto.randomUUID) {
+          id = crypto.randomUUID();
+        } else {
+          id = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+            const r = Math.random() * 16 | 0;
+            const v = c === 'x' ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+          });
+        }
+        localStorage.setItem('urgencias_voter_id', id);
+      }
+      return id;
+    }
+
+    async function validarCodigo(code) {
+      return await rpc('validar_codigo', { input_code: code });
+    }
+
+    async function cargarPreguntas() {
+      const rows = await rpc('obtener_preguntas', {
+        input_code: currentAccessCode,
+        cantidad: 20,
+        filtro_seccion: null
+      });
+      return Array.isArray(rows) ? rows : [];
+    }
+
+    async function corregirPregunta(id, respuesta) {
+      const rows = await rpc('corregir_pregunta', {
+        input_code: currentAccessCode,
+        pregunta_id: id,
+        respuesta_usuario: respuesta
+      });
+      return Array.isArray(rows) ? rows[0] : rows;
+    }
+
+    async function registrarVotoTest(id, respuesta) {
+      const rows = await rpc('registrar_voto_test', {
+        p_input_code: currentAccessCode,
+        p_pregunta_id: id,
+        p_respuesta: respuesta,
+        p_voter_id: getVoterId()
+      });
+      return Array.isArray(rows) ? rows[0] : rows;
+    }
+
+    async function cargarCasoDelDia() {
+      const rows = await rpc('obtener_caso_del_dia', {
+        input_code: currentAccessCode
+      });
+      return Array.isArray(rows) ? rows[0] : rows;
+    }
+
+    async function cargarHistorialCasos() {
+      const rows = await rpc('obtener_historial_casos', {
+        input_code: currentAccessCode
+      });
+      return Array.isArray(rows) ? rows : [];
+    }
+
+    async function cargarPreguntasCaso(casoId) {
+      const rows = await rpc('obtener_preguntas_caso', {
+        p_input_code: currentAccessCode,
+        p_caso_id: casoId
+      });
+      return Array.isArray(rows) ? rows : [];
+    }
+
+    async function responderPreguntaCaso(preguntaId, respuesta) {
+      const rows = await rpc('responder_pregunta_caso', {
+        p_input_code: currentAccessCode,
+        p_pregunta_id: preguntaId,
+        p_respuesta_usuario: respuesta,
+        p_voter_id: getVoterId()
+      });
+      return Array.isArray(rows) ? rows[0] : rows;
+    }
+
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const code = accessCode.value.trim().toUpperCase();
+      const submitBtn = loginForm.querySelector('button[type="submit"]');
+
+      if (!code) {
+        loginError.textContent = 'Introduce un código de acceso.';
+        return;
+      }
+
+      loginError.textContent = '';
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Comprobando…';
+
+      try {
+        const valido = await validarCodigo(code);
+        if (!valido) {
+          loginError.textContent = 'Código no válido, caducado o desactivado.';
+          return;
+        }
+        currentAccessCode = code;
+        localStorage.setItem(ACCESS_STORAGE_KEY, code);
+        loginCard.classList.add('hidden');
+        showMenu();
+      } catch (error) {
+        console.error(error);
+        loginError.textContent = 'No se ha podido conectar con el test. Inténtalo de nuevo.';
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Entrar';
+      }
+    });
+
+    async function restoreSavedAccess() {
+      const savedCode = (localStorage.getItem(ACCESS_STORAGE_KEY) || '').trim().toUpperCase();
+
+      if (!savedCode) {
+        return;
+      }
+
+      const submitBtn = loginForm.querySelector('button[type="submit"]');
+      loginError.textContent = 'Comprobando acceso guardado…';
+      submitBtn.disabled = true;
+
+      try {
+        const valido = await validarCodigo(savedCode);
+
+        if (!valido) {
+          localStorage.removeItem(ACCESS_STORAGE_KEY);
+          currentAccessCode = '';
+          loginError.textContent = 'El código de acceso ha cambiado. Introduce el nuevo código.';
+          accessCode.value = '';
+          return;
+        }
+
+        currentAccessCode = savedCode;
+        loginError.textContent = '';
+        loginCard.classList.add('hidden');
+        showMenu();
+
+      } catch (error) {
+        console.error(error);
+        loginError.textContent = 'No se ha podido comprobar el acceso guardado. Puedes intentarlo de nuevo.';
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Entrar';
+      }
+    }
+
+    function showMenu() {
+      loginCard.classList.add('hidden');
+      menuCard.classList.remove('hidden');
+      historyCard.classList.add('hidden');
+      caseCard.classList.add('hidden');
+      quizCard.classList.add('hidden');
+      resultCard.classList.add('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    testModeBtn.addEventListener('click', startTest);
+
+    caseModeBtn.addEventListener('click', openCaseOfTheDay);
+    historyModeBtn.addEventListener('click', openCaseHistory);
+    historyBackBtn.addEventListener('click', showMenu);
+
+    function formatCaseDate(value) {
+      return value
+        ? new Date(value + 'T12:00:00').toLocaleDateString('es-ES', {
+            day: '2-digit',
+            month: 'long',
+            year: 'numeric'
+          })
+        : '';
+    }
+
+    function renderHistoryList(cases) {
+      historyList.innerHTML = '';
+      historyNoResults.classList.add('hidden');
+
+      if (!cases.length) {
+        if (historyCases.length) {
+          historyNoResults.classList.remove('hidden');
+        }
+        return;
+      }
+
+      cases.forEach(c => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'history-item';
+
+        const preview = String(c.caso || '').replace(/\s+/g, ' ').trim();
+        const shortPreview = preview.length > 190
+          ? preview.slice(0, 187) + '…'
+          : preview;
+
+        btn.innerHTML = `
+          <div class="history-item-date">${escapeHtml(formatCaseDate(c.fecha_publicacion))}</div>
+          <div class="history-item-title">${escapeHtml(c.titulo || 'Caso clínico')}</div>
+          <div class="history-item-preview">${escapeHtml(shortPreview)}</div>
+        `;
+
+        btn.addEventListener('click', () => openHistoricalCase(c));
+        historyList.appendChild(btn);
+      });
+    }
+
+    async function openCaseHistory() {
+      menuCard.classList.add('hidden');
+      historyCard.classList.remove('hidden');
+      caseCard.classList.add('hidden');
+      quizCard.classList.add('hidden');
+      resultCard.classList.add('hidden');
+
+      historyLoading.textContent = 'Cargando historial…';
+      historyLoading.classList.remove('hidden');
+      historyEmpty.classList.add('hidden');
+      historyNoResults.classList.add('hidden');
+      historyList.innerHTML = '';
+      historySearch.value = '';
+      historyCount.textContent = '0';
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      try {
+        historyCases = await cargarHistorialCasos();
+        historyLoading.classList.add('hidden');
+        historyCount.textContent = historyCases.length;
+
+        if (!historyCases.length) {
+          historyEmpty.classList.remove('hidden');
+          return;
+        }
+
+        renderHistoryList(historyCases);
+      } catch (error) {
+        console.error(error);
+        historyLoading.textContent = 'No se ha podido cargar el historial desde Supabase.';
+      }
+    }
+
+    historySearch.addEventListener('input', () => {
+      const term = historySearch.value.trim().toLowerCase();
+
+      if (!term) {
+        renderHistoryList(historyCases);
+        return;
+      }
+
+      const filtered = historyCases.filter(c => {
+        const haystack = [
+          c.titulo || '',
+          c.caso || '',
+          formatCaseDate(c.fecha_publicacion)
+        ].join(' ').toLowerCase();
+
+        return haystack.includes(term);
+      });
+
+      renderHistoryList(filtered);
+    });
+
+    async function openHistoricalCase(c) {
+      historyCard.classList.add('hidden');
+      caseCard.classList.remove('hidden');
+      quizCard.classList.add('hidden');
+      resultCard.classList.add('hidden');
+
+      caseOrigin = 'history';
+      caseTag.textContent = 'HISTORIAL · CASO CLÍNICO';
+      caseBackBtn.textContent = '← Volver al historial';
+
+      await loadCase(c);
+    }
+
+    async function loadCase(c) {
+      currentCase = c;
+      caseQuestions = [];
+      caseQuestionIndex = 0;
+      currentCaseQuestion = null;
+      caseAnswered = false;
+      caseCorrectCount = 0;
+      caseShowingResult = false;
+
+      caseLoading.textContent = 'Cargando caso clínico…';
+      caseLoading.classList.remove('hidden');
+      caseContent.classList.add('hidden');
+      caseEmpty.classList.add('hidden');
+      caseFeedback.className = 'feedback hidden';
+      caseFeedback.innerHTML = '';
+      caseVotes.classList.add('hidden');
+      caseVotes.innerHTML = '';
+      caseOptions.innerHTML = '';
+      caseImageWrap.classList.add('hidden');
+      caseImage.removeAttribute('src');
+      caseImage.alt = '';
+      caseImageCaption.textContent = '';
+      caseProgress.textContent = '';
+      caseQuestion.textContent = '';
+      casePersonalResult.classList.add('hidden');
+      casePersonalResult.innerHTML = '';
+      caseNextBtn.classList.add('hidden');
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      try {
+        caseQuestions = await cargarPreguntasCaso(currentCase.id);
+
+        if (!caseQuestions.length) {
+          caseLoading.classList.add('hidden');
+          caseContent.classList.remove('hidden');
+          caseTitle.textContent = currentCase.titulo || 'Caso clínico';
+          caseDate.textContent = formatCaseDate(currentCase.fecha_publicacion);
+          caseText.textContent = currentCase.caso;
+          renderCaseImage(currentCase);
+          caseProgress.textContent = '';
+          caseQuestion.textContent = 'Este caso todavía no tiene preguntas.';
+          return;
+        }
+
+        caseQuestionIndex = 0;
+        renderCase(currentCase);
+      } catch (error) {
+        console.error(error);
+        caseLoading.textContent = 'No se ha podido cargar el caso clínico desde Supabase.';
+      }
+    }
+
+    async function openCaseOfTheDay() {
+      menuCard.classList.add('hidden');
+      historyCard.classList.add('hidden');
+      caseCard.classList.remove('hidden');
+      quizCard.classList.add('hidden');
+      resultCard.classList.add('hidden');
+
+      caseOrigin = 'daily';
+      caseTag.textContent = 'CASO CLÍNICO DEL DÍA';
+      caseBackBtn.textContent = '← Volver al menú';
+
+      caseLoading.textContent = 'Cargando caso clínico…';
+      caseLoading.classList.remove('hidden');
+      caseContent.classList.add('hidden');
+      caseEmpty.classList.add('hidden');
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      try {
+        const c = await cargarCasoDelDia();
+
+        if (!c) {
+          currentCase = null;
+          caseLoading.classList.add('hidden');
+          caseEmpty.classList.remove('hidden');
+          return;
+        }
+
+        await loadCase(c);
+      } catch (error) {
+        console.error(error);
+        caseLoading.textContent = 'No se ha podido cargar el caso clínico desde Supabase.';
+      }
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+
+    function renderCaseImage(c) {
+      const url = (c.imagen_url || '').trim();
+
+      if (!url) {
+        caseImageWrap.classList.add('hidden');
+        caseImage.removeAttribute('src');
+        caseImage.alt = '';
+        caseImageCaption.textContent = '';
+        return;
+      }
+
+      caseImage.src = url;
+      caseImage.alt = (c.imagen_alt || 'Imagen del caso clínico').trim();
+      caseImageCaption.textContent = (c.imagen_leyenda || '').trim();
+      caseImageCaption.classList.toggle('hidden', !caseImageCaption.textContent);
+      caseImageWrap.classList.remove('hidden');
+    }
+
+    function renderCase(c) {
+      caseLoading.classList.add('hidden');
+      caseEmpty.classList.add('hidden');
+      caseContent.classList.remove('hidden');
+
+      caseTitle.textContent = c.titulo || 'Caso clínico del día';
+
+      caseDate.textContent = formatCaseDate(c.fecha_publicacion);
+
+      caseText.textContent = c.caso;
+      renderCaseImage(c);
+
+      renderCaseQuestion();
+    }
+
+    function renderCaseQuestion() {
+      caseAnswered = false;
+      caseShowingResult = false;
+      currentCaseQuestion = caseQuestions[caseQuestionIndex];
+
+      caseText.classList.remove('hidden');
+      caseProgress.classList.remove('hidden');
+      caseQuestion.classList.remove('hidden');
+      caseOptions.classList.remove('hidden');
+      casePersonalResult.classList.add('hidden');
+      casePersonalResult.innerHTML = '';
+
+      if (!currentCaseQuestion) {
+        caseProgress.textContent = '';
+        caseQuestion.textContent = 'No hay más preguntas.';
+        caseOptions.innerHTML = '';
+        caseNextBtn.classList.add('hidden');
+        return;
+      }
+
+      caseProgress.textContent =
+        `Pregunta ${caseQuestionIndex + 1} de ${caseQuestions.length}`;
+
+      caseQuestion.textContent = currentCaseQuestion.pregunta;
+
+      caseFeedback.className = 'feedback hidden';
+      caseFeedback.innerHTML = '';
+
+      caseVotes.classList.add('hidden');
+      caseVotes.innerHTML = '';
+
+      caseNextBtn.classList.add('hidden');
+
+      const opts = [
+        currentCaseQuestion.opcion_a,
+        currentCaseQuestion.opcion_b,
+        currentCaseQuestion.opcion_c,
+        currentCaseQuestion.opcion_d
+      ];
+
+      caseOptions.innerHTML = '';
+
+      opts.forEach((option, index) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'option';
+        btn.dataset.letter = ['a','b','c','d'][index];
+
+        btn.innerHTML = `
+          <span class="letter">${String.fromCharCode(65 + index)}</span>
+          <span>${escapeHtml(option)}</span>
+        `;
+
+        btn.addEventListener('click', () => answerCase(index));
+        caseOptions.appendChild(btn);
+      });
+    }
+
+    async function answerCase(selectedIndex) {
+      if (caseAnswered || !currentCaseQuestion) return;
+
+      caseAnswered = true;
+
+      const buttons = [...caseOptions.querySelectorAll('.option')];
+      buttons.forEach(btn => btn.disabled = true);
+
+      const selectedLetter = ['a','b','c','d'][selectedIndex];
+
+      caseFeedback.className = 'feedback';
+      caseFeedback.innerHTML =
+        '<div class="feedback-title">Comprobando respuesta…</div>';
+      caseFeedback.classList.remove('hidden');
+
+      try {
+        const r = await responderPreguntaCaso(
+          currentCaseQuestion.id,
+          selectedLetter
+        );
+
+        if (!r) {
+          throw new Error('Sin respuesta de Supabase');
+        }
+
+        const correctIndex = ['a','b','c','d'].indexOf(
+          (r.respuesta_correcta || '').toLowerCase()
+        );
+
+        if (correctIndex >= 0) {
+          buttons[correctIndex].classList.add('correct');
+        }
+
+        if (!r.es_correcta) {
+          buttons[selectedIndex].classList.add('incorrect');
+        }
+
+        if (r.es_correcta) {
+          caseCorrectCount++;
+        }
+
+        caseFeedback.className =
+          `feedback ${r.es_correcta ? 'ok' : 'bad'}`;
+
+        caseFeedback.innerHTML = `
+          <div class="feedback-title">
+            ${r.es_correcta ? '✓ Correcto' : '✕ Incorrecto'}
+          </div>
+          <p>
+            <strong>Respuesta correcta:</strong>
+            ${(r.respuesta_correcta || '').toUpperCase()}
+          </p>
+          <p>${escapeHtml(r.explicacion || '')}</p>
+        `;
+
+        renderCaseVotes(r);
+
+        if (caseQuestionIndex < caseQuestions.length - 1) {
+          caseNextBtn.textContent = 'Siguiente pregunta';
+        } else {
+          caseNextBtn.textContent = 'Ver resultado final';
+        }
+
+        caseNextBtn.classList.remove('hidden');
+
+      } catch (error) {
+        console.error(error);
+
+        caseAnswered = false;
+        buttons.forEach(btn => btn.disabled = false);
+
+        caseFeedback.className = 'feedback bad';
+        caseFeedback.innerHTML = `
+          <div class="feedback-title">
+            No se ha podido registrar tu respuesta.
+          </div>
+          <p>Inténtalo de nuevo.</p>
+        `;
+      }
+    }
+
+    function renderCaseVotes(r) {
+      const total = Number(r.total_votos || 0);
+      const votes = [
+        Number(r.votos_a || 0),
+        Number(r.votos_b || 0),
+        Number(r.votos_c || 0),
+        Number(r.votos_d || 0)
+      ];
+
+      const rows = votes.map((count, i) => {
+        const pct = total ? Math.round((count / total) * 100) : 0;
+        const letter = String.fromCharCode(65 + i);
+        return `
+          <div class="vote-row">
+            <strong>${letter}</strong>
+            <div class="vote-track"><div class="vote-fill" style="width:${pct}%"></div></div>
+            <span>${pct}%</span>
+          </div>
+        `;
+      }).join('');
+
+      caseVotes.innerHTML = `
+        <div class="vote-title">Votación · ${total} ${total === 1 ? 'respuesta' : 'respuestas'}</div>
+        ${rows}
+      `;
+      caseVotes.classList.remove('hidden');
+    }
+
+    function showCasePersonalResult() {
+      const total = caseQuestions.length;
+      const correct = caseCorrectCount;
+      const incorrect = Math.max(0, total - correct);
+      const pct = total ? Math.round((correct / total) * 100) : 0;
+
+      caseShowingResult = true;
+
+      caseText.classList.add('hidden');
+      caseProgress.classList.add('hidden');
+      caseQuestion.classList.add('hidden');
+      caseOptions.classList.add('hidden');
+      caseFeedback.classList.add('hidden');
+      caseVotes.classList.add('hidden');
+
+      casePersonalResult.innerHTML = `
+        <h3>Caso completado</h3>
+        <div class="case-score-number">${pct}%</div>
+        <div class="case-score-detail">
+          Has acertado ${correct} de ${total} ${total === 1 ? 'pregunta' : 'preguntas'}
+        </div>
+        <div class="case-score-breakdown">
+          <span>Aciertos: <strong>${correct}</strong></span>
+          <span>Fallos: <strong>${incorrect}</strong></span>
+        </div>
+      `;
+
+      casePersonalResult.classList.remove('hidden');
+      caseNextBtn.textContent = caseOrigin === 'history'
+        ? 'Volver al historial'
+        : 'Volver al menú';
+      caseNextBtn.classList.remove('hidden');
+
+      window.scrollTo({
+        top: Math.max(0, casePersonalResult.offsetTop - 40),
+        behavior: 'smooth'
+      });
+    }
+
+    function exitCurrentCase() {
+      if (caseOrigin === 'history') {
+        openCaseHistory();
+      } else {
+        showMenu();
+      }
+    }
+
+    caseNextBtn.addEventListener('click', () => {
+      if (caseShowingResult) {
+        exitCurrentCase();
+        return;
+      }
+
+      if (caseQuestionIndex < caseQuestions.length - 1) {
+        caseQuestionIndex++;
+        renderCaseQuestion();
+
+        window.scrollTo({
+          top: Math.max(0, caseQuestion.offsetTop - 30),
+          behavior: 'smooth'
+        });
+      } else {
+        showCasePersonalResult();
+      }
+    });
+
+    caseBackBtn.addEventListener('click', exitCurrentCase);
+    quizBackBtn.addEventListener('click', showMenu);
+    resultBackBtn.addEventListener('click', showMenu);
+
+    async function startTest() {
+      menuCard.classList.add('hidden');
+      historyCard.classList.add('hidden');
+      caseCard.classList.add('hidden');
+      quizCard.classList.remove('hidden');
+      resultCard.classList.add('hidden');
+      questionEl.textContent = 'Cargando preguntas…';
+      optionsEl.innerHTML = '';
+      feedbackEl.className = 'feedback hidden';
+      nextBtn.classList.add('hidden');
+
+      try {
+        test = await cargarPreguntas();
+        if (!test.length) {
+          questionEl.textContent = 'No hay preguntas disponibles todavía.';
+          return;
+        }
+        current = 0;
+        score = 0;
+        scoredAnswered = 0;
+        annulled = 0;
+        answered = false;
+        renderQuestion();
+      } catch (error) {
+        console.error(error);
+        questionEl.textContent = 'No se han podido cargar las preguntas desde Supabase.';
+      }
+    }
+
+    function renderQuestion() {
+      answered = false;
+      const q = test[current];
+      categoryEl.textContent = q.tema || q.seccion || 'Urgencias';
+      progressText.textContent = `Pregunta ${current + 1} de ${test.length}`;
+      progressBar.style.width = `${((current + 1) / test.length) * 100}%`;
+      questionEl.textContent = q.enunciado;
+      feedbackEl.className = 'feedback hidden';
+      feedbackEl.innerHTML = '';
+      nextBtn.classList.add('hidden');
+      nextBtn.textContent = current === test.length - 1 ? 'Ver resultado' : 'Siguiente pregunta';
+
+      const options = [q.opcion_a, q.opcion_b, q.opcion_c, q.opcion_d];
+      optionsEl.innerHTML = '';
+      options.forEach((option, index) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'option';
+        btn.dataset.letter = ['a','b','c','d'][index];
+        btn.innerHTML = `<span class="letter">${String.fromCharCode(65 + index)}</span><span>${option}</span>`;
+        btn.addEventListener('click', () => answer(index));
+        optionsEl.appendChild(btn);
+      });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function renderTestCommunityStats(stats) {
+      if (!stats) return '';
+
+      const total = Number(stats.total_votos) || 0;
+      if (!total) return '';
+
+      const counts = {
+        a: Number(stats.votos_a) || 0,
+        b: Number(stats.votos_b) || 0,
+        c: Number(stats.votos_c) || 0,
+        d: Number(stats.votos_d) || 0
+      };
+
+      const aciertos = Number(stats.aciertos) || 0;
+      const fallos = Number(stats.fallos) || 0;
+      const pctAcierto = Math.round((aciertos / total) * 100);
+      const pctFallo = Math.round((fallos / total) * 100);
+
+      const rows = ['a','b','c','d'].map(letter => {
+        const count = counts[letter];
+        const pct = Math.round((count / total) * 100);
+
+        return `
+          <div class="test-stat-row">
+            <div class="test-stat-letter">${letter.toUpperCase()}</div>
+            <div class="test-stat-track">
+              <div class="test-stat-fill" style="width:${pct}%"></div>
+            </div>
+            <div class="test-stat-value">${count} · ${pct}%</div>
+          </div>
+        `;
+      }).join('');
+
+      return `
+        <div class="test-community-stats">
+          <div class="test-community-title">Respuestas de la comunidad</div>
+          <div class="test-community-subtitle">${total} ${total === 1 ? 'respuesta' : 'respuestas'}</div>
+
+          ${rows}
+
+          <div class="test-stat-summary">
+            <span><strong>Aciertos:</strong> ${aciertos} (${pctAcierto}%)</span>
+            <span><strong>Fallos:</strong> ${fallos} (${pctFallo}%)</span>
+          </div>
+        </div>
+      `;
+    }
+
+    async function answer(selectedIndex) {
+      if (answered) return;
+      answered = true;
+      const q = test[current];
+      const buttons = [...optionsEl.querySelectorAll('.option')];
+      buttons.forEach(btn => btn.disabled = true);
+
+      const selectedLetter = ['a','b','c','d'][selectedIndex];
+      feedbackEl.className = 'feedback';
+      feedbackEl.innerHTML = '<div class="feedback-title">Comprobando respuesta…</div>';
+      feedbackEl.classList.remove('hidden');
+
+      try {
+        const r = await corregirPregunta(q.id, selectedLetter);
+        if (!r) throw new Error('Sin respuesta de corrección');
+
+        let communityStats = null;
+        try {
+          communityStats = await registrarVotoTest(q.id, selectedLetter);
+        } catch (statsError) {
+          console.warn('No se han podido cargar las estadísticas del test.', statsError);
+        }
+
+        const correctIndex = r.respuesta_correcta ? ['a','b','c','d'].indexOf(r.respuesta_correcta.toLowerCase()) : -1;
+        if (correctIndex >= 0) buttons[correctIndex].classList.add('correct');
+
+        if (r.puntua) {
+          scoredAnswered++;
+          if (r.es_correcta) score++;
+          else buttons[selectedIndex].classList.add('incorrect');
+        } else {
+          annulled++;
+        }
+
+        feedbackEl.classList.add(r.puntua ? (r.es_correcta ? 'ok' : 'bad') : 'bad');
+
+        let html = '';
+        if (!r.puntua) {
+          html += `<div class="feedback-title">⚠️ Pregunta desactualizada · no puntúa</div>`;
+        } else {
+          html += `<div class="feedback-title">${r.es_correcta ? '✅ Correcta' : '❌ Incorrecta'}</div>`;
+        }
+
+        if (r.explicacion_libro) {
+          html += `<p>${r.explicacion_libro}</p>`;
+        }
+
+        if ((r.estado_revision === 'actualizada' || r.estado_revision === 'desactualizada') && r.explicacion_actual) {
+          html += `<div style="margin-top:14px;padding:14px;border-radius:12px;background:#fff7ed;border:1px solid #fed7aa">`;
+          html += `<strong>⚠️ Actualización médica</strong>`;
+          html += `<p>${r.explicacion_actual}</p>`;
+          if (r.fuente_actual) html += `<p class="small"><strong>Fuente:</strong> ${r.fuente_actual}${r.fecha_revision ? ` · Revisado ${r.fecha_revision}` : ''}</p>`;
+          if (r.url_fuente) html += `<p class="small"><a href="${r.url_fuente}" target="_blank" rel="noopener noreferrer">Ver fuente actual</a></p>`;
+          html += `</div>`;
+        }
+
+        html += renderTestCommunityStats(communityStats);
+
+        feedbackEl.innerHTML = html;
+        nextBtn.classList.remove('hidden');
+      } catch (error) {
+        console.error(error);
+        answered = false;
+        buttons.forEach(btn => btn.disabled = false);
+        feedbackEl.className = 'feedback bad';
+        feedbackEl.innerHTML = '<div class="feedback-title">No se ha podido corregir la pregunta.</div><p>Inténtalo otra vez.</p>';
+      }
+    }
+
+    nextBtn.addEventListener('click', () => {
+      if (!answered) return;
+      if (current < test.length - 1) {
+        current++;
+        renderQuestion();
+      } else {
+        showResult();
+      }
+    });
+
+    function showResult() {
+      quizCard.classList.add('hidden');
+      resultCard.classList.remove('hidden');
+      const pct = scoredAnswered ? Math.round((score / scoredAnswered) * 100) : 0;
+      resultNumber.textContent = `${score}/${scoredAnswered}`;
+      resultText.textContent = `Has obtenido un ${pct}% en las preguntas puntuables.${annulled ? ` ${annulled} pregunta(s) desactualizada(s) no se han contabilizado.` : ''}`;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    const LEGAL_CONTENT = {
+      legal: `
+        <h2 id="legalModalTitle">Aviso legal</h2>
+
+        <p>Esta aplicación es un proyecto educativo independiente creado y gestionado por <strong>Didac G.S., médico de urgencias</strong>, destinado al estudio y formación en medicina de urgencias.</p>
+
+        <p>El acceso a la aplicación es gratuito. Su contenido tiene finalidad exclusivamente docente y no constituye un servicio asistencial, una consulta médica ni una actividad de diagnóstico o tratamiento de pacientes.</p>
+
+        <p>Los contenidos originales de la aplicación, incluidos casos clínicos, preguntas, explicaciones y material docente elaborado por el autor, no podrán ser reproducidos o redistribuidos de forma sistemática sin autorización.</p>
+
+        <p><strong>Contacto:</strong> <a class="legal-email" href="mailto:didacgs86@gmail.com">didacgs86@gmail.com</a></p>
+
+        <p>La web se aloja mediante GitHub Pages y utiliza Supabase como infraestructura de base de datos.</p>
+      `,
+
+      privacy: `
+        <h2 id="legalModalTitle">Política de privacidad</h2>
+
+        <p>Esta aplicación está diseñada para solicitar la mínima información posible a sus usuarios.</p>
+
+        <p><strong>Responsable:</strong> Didac G.S., médico de urgencias<br>
+        <strong>Contacto:</strong> <a class="legal-email" href="mailto:didacgs86@gmail.com">didacgs86@gmail.com</a></p>
+
+        <p>La aplicación no solicita nombre real, dirección de correo electrónico, teléfono, número de colegiado ni otros datos identificativos directamente al usuario.</p>
+
+        <p>Para permitir determinadas funciones de la aplicación se puede almacenar:</p>
+
+        <ul>
+          <li>un identificador aleatorio asociado al navegador;</li>
+          <li>las respuestas seleccionadas en preguntas y casos clínicos;</li>
+          <li>si la respuesta ha sido correcta o incorrecta;</li>
+          <li>la fecha y hora de participación.</li>
+        </ul>
+
+        <p>El identificador del navegador se utiliza para distinguir participaciones y evitar respuestas duplicadas. No se utiliza para publicidad, elaboración de perfiles comerciales ni seguimiento del usuario en otros sitios web.</p>
+
+        <p>Para evitar solicitar el código de acceso en cada visita, la aplicación puede guardar dicho código localmente en el navegador del dispositivo. Al volver a abrir la web, el código guardado se valida de nuevo con Supabase. Si el responsable cambia o desactiva el código, el acceso guardado deja de ser válido y la aplicación vuelve a solicitarlo.</p>
+
+        <p>Los datos se utilizan exclusivamente para el funcionamiento de la aplicación y para obtener estadísticas de participación y resultados.</p>
+
+        <p>La infraestructura de base de datos utilizada es <strong>Supabase</strong>.</p>
+
+        <p>Los datos se conservarán únicamente mientras sean necesarios para el funcionamiento y evaluación del proyecto y podrán posteriormente eliminarse o conservarse únicamente de forma agregada y no vinculada a un identificador de navegador.</p>
+
+        <p>No se utilizan los datos para adoptar decisiones automatizadas sobre los usuarios ni para elaborar perfiles comerciales.</p>
+
+        <p>El usuario puede solicitar información, acceso, rectificación o supresión de los datos que puedan corresponderle, así como ejercer los restantes derechos previstos por la normativa de protección de datos, mediante el correo indicado anteriormente.</p>
+      `,
+
+      medical: `
+        <h2 id="legalModalTitle">Aviso médico</h2>
+
+        <p>El contenido de esta aplicación tiene finalidad exclusivamente educativa y está orientado principalmente a profesionales sanitarios y estudiantes.</p>
+
+        <p>Los casos clínicos, preguntas, explicaciones y recomendaciones no sustituyen el juicio clínico individual, los protocolos de cada centro, las fichas técnicas de los medicamentos ni las guías clínicas oficiales vigentes.</p>
+
+        <p>La medicina está sujeta a actualización continua. Aunque se intenta mantener el contenido actualizado, pueden producirse cambios posteriores en recomendaciones, dosis, indicaciones o estrategias diagnósticas y terapéuticas.</p>
+
+        <p>Ante una situación clínica real deberán consultarse las fuentes oficiales y protocolos correspondientes.</p>
+
+        <p>Los casos utilizados con finalidad docente son ficticios o están modificados y anonimizados para evitar la identificación de pacientes.</p>
+      `
+    };
+
+    function openLegalSection(section) {
+      const content = LEGAL_CONTENT[section];
+      if (!content) return;
+
+      legalModalContent.innerHTML = content;
+      legalModal.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+      legalCloseBtn.focus();
+    }
+
+    function closeLegalSection() {
+      legalModal.classList.add('hidden');
+      document.body.style.overflow = '';
+    }
+
+    document.querySelectorAll('[data-legal]').forEach(button => {
+      button.addEventListener('click', () => {
+        openLegalSection(button.dataset.legal);
+      });
+    });
+
+    legalCloseBtn.addEventListener('click', closeLegalSection);
+
+    legalModal.addEventListener('click', event => {
+      if (event.target === legalModal) {
+        closeLegalSection();
+      }
+    });
+
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && !legalModal.classList.contains('hidden')) {
+        closeLegalSection();
+      }
+    });
+
+    restartBtn.addEventListener('click', startTest);
+
+    restoreSavedAccess();
+  </script>
+</body>
+</html>
