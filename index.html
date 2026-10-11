@@ -4,7 +4,14 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#0f766e" />
-  <title>Urgencias · Entrenamiento</title>
+  <title>Urgencias365 · Entrenamiento médico</title>
+  <meta name="application-name" content="Urgencias365" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Urgencias365" />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png" />
   <style>
     :root {
       --bg: #f3f7f6;
@@ -922,20 +929,25 @@
       .card { border-radius: 18px; padding: 19px; }
       .brand { margin-bottom: 14px; }
     }
+
+    /* Identidad Urgencias365: logotipo adaptable en cabecera */
+    .brand-365 { display: flex; flex-direction: column; align-items: flex-start; gap: 0; margin-bottom: 23px; }
+    .brand-365-image { display: block; width: min(100%, 440px); height: auto; object-fit: contain; }
+    .brand-365-description { padding-left: 7px; }
+    .brand-365-description p { margin: 0 0 5px; color: var(--muted); font-size: .9rem; }
+    .brand-365-description .brand-365-author { opacity: .8; font-size: .84rem; }
+    @media (max-width:520px) { .brand-365-image { width: 100%; max-width: 390px; } .brand-365-description { padding-left: 3px; } }
   </style>
 </head>
 <body>
   <main class="shell">
-    <div class="brand">
-      <div class="logo">UE</div>
-      <div>
-        <h1>Urgencias · Entrenamiento</h1>
+    <header class="brand brand-365">
+      <img class="brand-365-image" src="./assets/urgencias365-logo.png" alt="Urgencias365" width="520" height="173" />
+      <div class="brand-365-description">
         <p>Casos clínicos y preguntas test de medicina de urgencias</p>
-        <p style="margin-top:6px; font-size:0.88rem; opacity:0.8;">
-          Creado por Didac G.S. · Médico de urgencias
-        </p>
+        <p class="brand-365-author">Creado por Didac G.S. · Médico de urgencias</p>
       </div>
-    </div>
+    </header>
 
     <section id="loginCard" class="card">
       <span class="tag">ACCESO PRIVADO</span>
@@ -2172,6 +2184,13 @@
     });
 
     restartBtn.addEventListener('click', startTest);
+
+    // Permite la instalación como app sin almacenar respuestas ni datos de Supabase.
+    if ('serviceWorker' in navigator && location.protocol === 'https:') {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(error => console.warn('Service worker:', error));
+      });
+    }
 
     restoreSavedAccess();
   </script>

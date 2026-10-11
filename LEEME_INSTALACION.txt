@@ -1,0 +1,17 @@
+URGENCIAS365 — INSTALACIÓN EN GITHUB PAGES
+
+1. Abre tu repositorio actual de GitHub.
+2. Haz una copia de seguridad de tu index.html actual.
+3. Copia el contenido del ZIP en la RAÍZ del repositorio, sustituyendo index.html.
+   Deben quedar index.html, manifest.webmanifest, sw.js y las carpetas assets/ e icons/.
+4. Haz commit de todos los archivos y espera al despliegue de GitHub Pages.
+5. Abre la web mediante HTTPS. En iPhone: Safari > Compartir > Añadir a pantalla de inicio.
+   En Android (Chrome): menú > Instalar aplicación o Añadir a pantalla de inicio.
+
+NOTAS:
+- Mantiene el código de preguntas, votos, Supabase y explicaciones en tarjetas del index proporcionado.
+- No requiere SQL ni editar Supabase.
+- El icono y la cabecera deberían funcionar con rutas relativas incluso si GitHub Pages está bajo /nombre-repositorio/.
+- La interfaz básica puede abrirse desde caché tras haberla visitado, pero los casos y votaciones necesitan conexión a Supabase.
+- No se incluyen datos clínicos almacenados en caché.
+- Si existe un service worker anterior en el repositorio, conviene revisar su compatibilidad antes de publicar.
