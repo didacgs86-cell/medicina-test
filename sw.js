@@ -1,5 +1,5 @@
-const CACHE_NAME = 'urgencias365-shell-v1';
-const SHELL = ['./', './index.html', './manifest.webmanifest', './assets/urgencias365-logo.png', './icons/icon-192.png', './icons/icon-512.png', './icons/apple-touch-icon.png'];
+const CACHE_NAME = 'urgencias365-shell-v2';
+const SHELL = ['./', './index.html', './manifest.webmanifest', './assets/urgencias365-logo-verde.png', './icons/icon-192.png', './icons/icon-512.png', './icons/apple-touch-icon.png'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(SHELL)).then(() => self.skipWaiting()));
 });

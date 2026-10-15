@@ -930,6 +930,20 @@
       .brand { margin-bottom: 14px; }
     }
 
+    .topics-select {width:100%;padding:14px;border-radius:12px;border:1px solid var(--border);background:white;font:inherit;color:var(--text)}
+    .topics-list {display:grid;gap:12px;margin:20px 0}
+    .topics-entry {width:100%;text-align:left;border:1px solid var(--border);border-radius:14px;background:#f8fbfa;padding:18px;cursor:pointer;color:var(--text);font:inherit}
+    .topics-entry:hover,.topics-entry:focus-visible {border-color:var(--primary);background:#edf7f5}
+    .topics-entry strong {display:block;margin:0 0 7px;font-size:1.03rem}
+    .topics-entry small {display:block;color:var(--primary);margin-bottom:8px}
+    .topics-entry p {margin:0;color:var(--muted);font-size:.92rem}
+    .topic-body {line-height:1.75;overflow-wrap:anywhere}
+    .topic-body h3 {margin:25px 0 8px;color:var(--primary-dark)}
+    .topic-body p {white-space:pre-wrap;margin:10px 0}
+    .topic-body ul {padding-left:24px}
+    .topic-body img {max-width:100%;height:auto;border-radius:12px}
+    #topicListBack {margin-bottom:22px}
+
     /* Identidad Urgencias365: logotipo adaptable en cabecera */
     .brand-365 { display: flex; flex-direction: column; align-items: flex-start; gap: 0; margin-bottom: 23px; }
     .brand-365-image { display: block; width: min(100%, 440px); height: auto; object-fit: contain; }
@@ -944,7 +958,7 @@
     <header class="brand brand-365">
       <img class="brand-365-image" src="./assets/urgencias365-logo-verde.png?v=2" alt="Urgencias365" width="520" height="173" />
       <div class="brand-365-description">
-        <p>Casos clínicos y preguntas test de medicina de urgencias</p>
+        <p>Casos clínicos, preguntas test y temas de medicina de urgencias</p>
         <p class="brand-365-author">Creado por Didac G.S. · Médico de urgencias</p>
       </div>
     </header>
@@ -964,7 +978,7 @@
     <section id="menuCard" class="card hidden">
       <span class="tag">MENÚ PRINCIPAL</span>
       <h2 style="margin-top:14px">¿Qué quieres hacer?</h2>
-      <p class="small">Escoge uno de los tres modos de entrenamiento.</p>
+      <p class="small">Escoge cómo quieres aprender o repasar.</p>
 
       <div class="mode-grid">
         <button id="caseModeBtn" class="mode-card" type="button">
@@ -992,6 +1006,11 @@
           </div>
         </button>
 
+        <button id="topicsModeBtn" class="mode-card" type="button">
+          <div><div class="mode-title">📖 Temas y conceptos</div><div class="mode-desc">Consulta explicaciones médicas organizadas por especialidad, sin preguntas tipo test.</div></div>
+          <div class="mode-arrow">Explorar temas →</div>
+        </button>
+
         <button id="testModeBtn" class="mode-card" type="button">
           <div>
             <div class="mode-title">Modo preguntas test</div>
@@ -1000,6 +1019,28 @@
           <div class="mode-arrow">Empezar test →</div>
         </button>
       </div>
+    </section>
+
+    <section id="topicsCard" class="card hidden">
+      <span class="tag">BIBLIOTECA DOCENTE</span>
+      <h2 style="margin-top:14px">Temas y conceptos</h2>
+      <p class="small">Explicaciones directas para consulta y repaso médico.</p>
+      <div id="topicsBrowser">
+        <label for="topicsSearch">Buscar por título o contenido</label>
+        <input id="topicsSearch" type="search" placeholder="Buscar un tema…" style="text-transform:none">
+        <label for="topicsCategory">Especialidad</label>
+        <select id="topicsCategory" class="topics-select"><option value="">Todas las especialidades</option></select>
+        <p id="topicsStatus" class="small" role="status"></p>
+        <div id="topicsList" class="topics-list"></div>
+      </div>
+      <article id="topicReader" class="hidden">
+        <button type="button" id="topicListBack" class="secondary">← Volver a los temas</button>
+        <p id="topicCategoryLabel" class="small"></p>
+        <h2 id="topicTitle"></h2>
+        <p id="topicUpdated" class="small"></p>
+        <div id="topicContent" class="topic-body"></div>
+      </article>
+      <button id="topicsBackBtn" class="secondary" type="button">← Volver al menú</button>
     </section>
 
     <section id="historyCard" class="card history-card hidden">
@@ -1148,6 +1189,7 @@
     const loginCard = document.getElementById('loginCard');
     const menuCard = document.getElementById('menuCard');
     const historyCard = document.getElementById('historyCard');
+    const topicsCard = document.getElementById('topicsCard');
     const caseCard = document.getElementById('caseCard');
     const quizCard = document.getElementById('quizCard');
     const resultCard = document.getElementById('resultCard');
@@ -1371,11 +1413,94 @@
       loginCard.classList.add('hidden');
       menuCard.classList.remove('hidden');
       historyCard.classList.add('hidden');
+      topicsCard.classList.add('hidden');
       caseCard.classList.add('hidden');
       quizCard.classList.add('hidden');
       resultCard.classList.add('hidden');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
+
+    // Biblioteca de consulta. Las publicaciones se administran desde Supabase,
+    // no desde el navegador de los lectores (el código de acceso no es cuenta admin).
+    const topicsModeBtn = document.getElementById('topicsModeBtn');
+    const topicsSearch = document.getElementById('topicsSearch');
+    const topicsCategory = document.getElementById('topicsCategory');
+    const topicsList = document.getElementById('topicsList');
+    const topicsStatus = document.getElementById('topicsStatus');
+    const topicsBrowser = document.getElementById('topicsBrowser');
+    const topicReader = document.getElementById('topicReader');
+    let topicsCache = [];
+
+    function escapeTopicText(input) {
+      return String(input ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    }
+    function renderTopicBody(text) {
+      // Sintaxis sencilla segura: # o ## para encabezados, - para listas,
+      // párrafos en líneas normales. Nunca se interpreta HTML del autor.
+      const chunks = String(text ?? '').replace(/\r/g,'').split(/\n\s*\n/);
+      return chunks.map(chunk => {
+        const lines=chunk.split('\n');
+        if(lines.every(line => /^-\s+/.test(line))) {
+          return '<ul>'+lines.map(line=>'<li>'+escapeTopicText(line.replace(/^-\s+/,''))+'</li>').join('')+'</ul>';
+        }
+        return lines.map(line => {
+          const heading=line.match(/^#{1,3}\s+(.+)$/);
+          return heading ? '<h3>'+escapeTopicText(heading[1])+'</h3>' : '<p>'+escapeTopicText(line)+'</p>';
+        }).join('');
+      }).join('');
+    }
+    function drawTopics() {
+      const term = topicsSearch.value.trim().toLocaleLowerCase('es');
+      const cat = topicsCategory.value;
+      const filtered=topicsCache.filter(t=>(!cat || t.categoria===cat) &&
+        (!term || [t.titulo,t.resumen,t.contenido].some(v=>String(v||'').toLocaleLowerCase('es').includes(term))));
+      topicsList.replaceChildren();
+      topicsStatus.textContent = filtered.length ? `${filtered.length} tema(s) disponible(s)` : 'No hay temas que coincidan con tu búsqueda.';
+      filtered.forEach(t=>{
+        const btn=document.createElement('button');
+        btn.type='button';btn.className='topics-entry';
+        const title=document.createElement('strong'); title.textContent=t.titulo;
+        const catLabel=document.createElement('small');catLabel.textContent=t.categoria;
+        const summary=document.createElement('p');summary.textContent=t.resumen || 'Leer explicación →';
+        btn.append(catLabel,title,summary);
+        btn.addEventListener('click',()=>openTopic(t));
+        topicsList.append(btn);
+      });
+    }
+    function openTopic(t) {
+      topicsBrowser.classList.add('hidden');topicReader.classList.remove('hidden');
+      document.getElementById('topicCategoryLabel').textContent=t.categoria;
+      document.getElementById('topicTitle').textContent=t.titulo;
+      document.getElementById('topicUpdated').textContent=t.actualizado_en ?
+        'Actualizado: '+new Date(t.actualizado_en).toLocaleDateString('es-ES') : '';
+      document.getElementById('topicContent').innerHTML=renderTopicBody(t.contenido);
+      window.scrollTo({top:0,behavior:'smooth'});
+    }
+    function backToTopicList() {
+      topicReader.classList.add('hidden');topicsBrowser.classList.remove('hidden');
+    }
+    async function openTopics() {
+      menuCard.classList.add('hidden');historyCard.classList.add('hidden');
+      caseCard.classList.add('hidden');quizCard.classList.add('hidden');resultCard.classList.add('hidden');
+      topicsCard.classList.remove('hidden');backToTopicList();
+      topicsStatus.textContent='Cargando temas…';topicsList.replaceChildren();
+      try {
+        const data=await rpc('obtener_temas',{input_code:currentAccessCode});
+        topicsCache=Array.isArray(data)?data:[];
+        topicsCategory.replaceChildren(new Option('Todas las especialidades',''));
+        [...new Set(topicsCache.map(t=>t.categoria).filter(Boolean))].sort().forEach(cat=>topicsCategory.add(new Option(cat,cat)));
+        drawTopics();
+      } catch(err) {
+        console.error('Error cargando temas:',err);
+        topicsStatus.textContent='No se han podido cargar los temas. Comprueba que has ejecutado el SQL de instalación.';
+      }
+      window.scrollTo({top:0,behavior:'smooth'});
+    }
+    topicsModeBtn.addEventListener('click',openTopics);
+    document.getElementById('topicsBackBtn').addEventListener('click',showMenu);
+    document.getElementById('topicListBack').addEventListener('click',backToTopicList);
+    topicsSearch.addEventListener('input',drawTopics);
+    topicsCategory.addEventListener('change',drawTopics);
 
     testModeBtn.addEventListener('click', startTest);
 
