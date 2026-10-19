@@ -977,6 +977,22 @@
     .brand-365-description .brand-365-author { opacity: .8; font-size: .84rem; }
     @media (max-width:520px) { .brand-365-image { width: 100%; max-width: 390px; } .brand-365-description { padding-left: 3px; } }
 
+    /* Banco de preguntas con seguimiento personal */
+    .test-stats-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:18px 0}
+    .test-stat-card{border:1px solid var(--border);background:#f7fbfa;border-radius:14px;text-align:center;padding:15px 7px;font-size:.8rem;color:var(--muted)}
+    .test-stat-card strong{display:block;color:var(--primary);font-size:1.8rem;line-height:1.3}
+    .test-choice{width:100%;padding:17px 18px;border:1px solid var(--border);border-radius:15px;background:white;color:var(--text);text-align:left;margin:7px 0;cursor:pointer}
+    .test-choice strong{display:block;font-size:1.04rem;margin-bottom:4px}
+    .test-choice small{display:block;font-weight:500;line-height:1.5;color:var(--muted);font-size:.86rem}
+    .test-choice:hover:not(:disabled){background:#edf7f5;border-color:var(--primary)}
+    .test-choice:disabled{opacity:.45;cursor:default}
+    .test-filter{width:100%;margin-top:8px;padding:12px;border:1px solid var(--border);border-radius:12px;background:white;font:inherit}
+    .test-explorer{margin-top:20px;border-top:1px solid var(--border);padding-top:14px}
+    .test-list-entry{width:100%;text-align:left;border:1px solid var(--border);border-radius:12px;padding:14px;margin:8px 0;color:var(--text);background:#fff;cursor:pointer}
+    .test-list-entry strong{display:block;line-height:1.5;font-size:.91rem}
+    .test-list-entry small{display:block;color:var(--muted);margin-top:6px;font-size:.8rem}
+    .test-list-entry:hover{border-color:var(--primary)}
+    @media(max-width:400px){.test-stat-card strong{font-size:1.45rem}.test-stat-card{font-size:.7rem}}
     /* Novedades discretas de Urgencias365 */
     .u365-new {display:inline-flex;align-items:center;gap:5px;margin-left:9px;padding:3px 9px;border-radius:999px;background:#d9eee2;color:#245842;font-size:.67rem;font-weight:800;letter-spacing:.04em;vertical-align:middle;white-space:nowrap}
     .u365-new::before {content:"";width:6px;height:6px;border-radius:50%;background:#398b62}
@@ -1171,6 +1187,33 @@
       <button id="caseBackBtn" class="secondary" type="button">← Volver al menú</button>
     </section>
 
+    <section id="testHub" class="card hidden">
+      <span class="tag">BANCO DE PREGUNTAS</span>
+      <h2 style="margin-top:14px">Modo preguntas test</h2>
+      <p class="small">Resuelve las novedades, repasa errores y consulta tu historial personal.</p>
+      <p class="small" id="testHubStatus" role="status"></p>
+      <div id="testHubContent" class="hidden">
+        <div class="test-stats-grid">
+          <div class="test-stat-card"><strong id="testCountNew">0</strong>Nuevas</div>
+          <div class="test-stat-card"><strong id="testCountWrong">0</strong>Para repasar</div>
+          <div class="test-stat-card"><strong id="testCountDone">0</strong>Acertadas</div>
+        </div>
+        <p class="small" id="testHubSummary"></p>
+        <button class="test-choice" id="testStartNew" type="button"><strong>✦ Preguntas nuevas →</strong><small>Solo las que todavía no has contestado, empezando por las más recientes.</small></button>
+        <button class="test-choice" id="testStartWrong" type="button"><strong>↻ Repasar errores →</strong><small>Practica tus preguntas falladas y aprende de la explicación.</small></button>
+        <button class="test-choice" id="testShowAll" type="button"><strong>▤ Todas las preguntas →</strong><small>Banco completo organizado por especialidad.</small></button>
+        <button class="test-choice" id="testShowProgress" type="button"><strong>◷ Mi progreso →</strong><small>Seguimiento de primeros intentos y preguntas superadas.</small></button>
+        <div id="testExplorer" class="test-explorer hidden">
+          <h3>Todas las preguntas</h3>
+          <label for="testCategoryFilter">Especialidad</label>
+          <select class="test-filter" id="testCategoryFilter"><option value="">Todas las especialidades</option></select>
+          <div id="testQuestionList"></div>
+        </div>
+        <div id="testProgressPanel" class="test-explorer hidden"></div>
+      </div>
+      <button id="testHubBack" class="secondary" type="button">← Volver al menú</button>
+    </section>
+
     <section id="quizCard" class="card hidden">
       <div class="topline">
         <span id="category" class="tag"></span>
@@ -1181,7 +1224,7 @@
       <div id="options" class="options"></div>
       <div id="feedback" class="feedback hidden"></div>
       <button id="nextBtn" class="next hidden" type="button">Siguiente pregunta</button>
-      <button id="quizBackBtn" class="secondary" type="button">← Volver al menú</button>
+      <button id="quizBackBtn" class="secondary" type="button">← Volver al Modo test</button>
     </section>
 
     <section id="resultCard" class="card hidden">
@@ -1189,8 +1232,8 @@
       <h2 style="margin-top:14px">Resultado</h2>
       <div id="resultNumber" class="result-number"></div>
       <p id="resultText"></p>
-      <button id="restartBtn" class="primary" type="button">Hacer otro test</button>
-      <button id="resultBackBtn" class="secondary" type="button">← Volver al menú</button>
+      <button id="restartBtn" class="primary" type="button">Volver al banco de preguntas</button>
+      <button id="resultBackBtn" class="secondary" type="button">← Volver al Modo test</button>
     </section>
 
 
@@ -1429,6 +1472,98 @@
     let scoredAnswered = 0;
     let annulled = 0;
     let answered = false;
+    let testBank = [];
+    const testHub = document.getElementById('testHub');
+    const testHubStatus = document.getElementById('testHubStatus');
+    const testHubContent = document.getElementById('testHubContent');
+    const testExplorer = document.getElementById('testExplorer');
+    const testProgressPanel = document.getElementById('testProgressPanel');
+
+    function testStorageKey() {
+      // Progreso aislado por navegador y código de acceso, sin poner el código en la clave.
+      let hash = 2166136261;
+      for (const c of currentAccessCode) hash = Math.imul(hash ^ c.charCodeAt(0), 16777619);
+      return 'urgencias365_test_progreso_v1_' + getVoterId() + '_' + (hash >>> 0).toString(36);
+    }
+    function readTestProgress() {
+      try {
+        const value = JSON.parse(localStorage.getItem(testStorageKey()) || '{}');
+        return value && typeof value === 'object' && !Array.isArray(value) ? value : {};
+      } catch(e) { return {}; }
+    }
+    function writeTestProgress(progress) {
+      try { localStorage.setItem(testStorageKey(), JSON.stringify(progress)); return true; }
+      catch(e) { console.warn('No se pudo guardar el progreso',e); return false; }
+    }
+    function stateOfTest(q, progress=readTestProgress()) {
+      const item = progress[String(q.id)];
+      return !item || !item.attempts ? 'new' : item.mastered ? 'done' : 'wrong';
+    }
+    function categoryOfTest(q) { return String(q.tema || q.seccion || 'Urgencias'); }
+    function getTestStats() {
+      const p = readTestProgress(), stats={new:0,wrong:0,done:0,firstCorrect:0,firstTotal:0};
+      testBank.forEach(q => {
+        stats[stateOfTest(q,p)]++;
+        const v=p[String(q.id)];
+        if (v?.attempts) { stats.firstTotal++; if (v.firstCorrect) stats.firstCorrect++; }
+      });
+      return stats;
+    }
+    function showTestHub() {
+      menuCard.classList.add('hidden');quizCard.classList.add('hidden');resultCard.classList.add('hidden');
+      testHub.classList.remove('hidden');testExplorer.classList.add('hidden');testProgressPanel.classList.add('hidden');
+      const stats=getTestStats();
+      document.getElementById('testCountNew').textContent=stats.new;
+      document.getElementById('testCountWrong').textContent=stats.wrong;
+      document.getElementById('testCountDone').textContent=stats.done;
+      document.getElementById('testStartNew').disabled=!stats.new;
+      document.getElementById('testStartWrong').disabled=!stats.wrong;
+      document.getElementById('testHubSummary').textContent=
+        (stats.firstTotal ? Math.round(100*stats.firstCorrect/stats.firstTotal)+'% de aciertos iniciales · ' : '')+
+        (stats.wrong+stats.done)+' de '+testBank.length+' realizadas.';
+      testHubStatus.textContent=testBank.length ? testBank.length+' preguntas disponibles.' : 'Todavía no hay preguntas publicadas.';
+      testHubContent.classList.remove('hidden');
+      window.scrollTo({top:0,behavior:'smooth'});
+    }
+    function launchTest(questions) {
+      if (!questions.length) {showTestHub();return;}
+      test=[...questions];current=0;score=0;scoredAnswered=0;annulled=0;answered=false;
+      testHub.classList.add('hidden');resultCard.classList.add('hidden');quizCard.classList.remove('hidden');
+      renderQuestion();
+    }
+    function renderTestCatalog() {
+      const category=document.getElementById('testCategoryFilter').value;
+      const container=document.getElementById('testQuestionList');container.replaceChildren();
+      const progress=readTestProgress();
+      testBank.filter(q=>!category||categoryOfTest(q)===category).forEach(q=>{
+        const button=document.createElement('button');button.type='button';button.className='test-list-entry';
+        const label=document.createElement('strong');label.textContent=q.enunciado;
+        const note=document.createElement('small');
+        note.textContent=categoryOfTest(q)+' · '+({new:'Nueva',wrong:'Para repasar',done:'Acertada'}[stateOfTest(q,progress)]);
+        button.append(label,note);button.addEventListener('click',()=>launchTest([q]));container.appendChild(button);
+      });
+    }
+    document.getElementById('testHubBack').addEventListener('click',showMenu);
+    document.getElementById('testStartNew').addEventListener('click',()=>launchTest(testBank.filter(q=>stateOfTest(q)==='new')));
+    document.getElementById('testStartWrong').addEventListener('click',()=>launchTest(testBank.filter(q=>stateOfTest(q)==='wrong')));
+    document.getElementById('testShowAll').addEventListener('click',()=>{
+      testProgressPanel.classList.add('hidden');testExplorer.classList.remove('hidden');
+      const select=document.getElementById('testCategoryFilter');select.replaceChildren(new Option('Todas las especialidades',''));
+      [...new Set(testBank.map(categoryOfTest))].sort((a,b)=>a.localeCompare(b,'es')).forEach(c=>select.add(new Option(c,c)));
+      renderTestCatalog();
+    });
+    document.getElementById('testCategoryFilter').addEventListener('change',renderTestCatalog);
+    document.getElementById('testShowProgress').addEventListener('click',()=>{
+      testExplorer.classList.add('hidden');testProgressPanel.classList.remove('hidden');
+      const v=getTestStats();testProgressPanel.replaceChildren();
+      const heading=document.createElement('h3');heading.textContent='Mi progreso';
+      const summary=document.createElement('p');summary.textContent=
+        v.firstTotal+' preguntas realizadas · '+v.firstCorrect+' aciertos al primer intento ('+
+        (v.firstTotal?Math.round(100*v.firstCorrect/v.firstTotal):0)+'%) · '+v.wrong+' pendientes de repaso · '+v.done+' acertadas.';
+      const note=document.createElement('p');note.className='small';
+      note.textContent='Los aciertos posteriores no borran los fallos iniciales. Los datos se conservan en este dispositivo y navegador, no se sincronizan entre dispositivos.';
+      testProgressPanel.append(heading,summary,note);
+    });
 
     let currentCase = null;
     let caseQuestions = [];
@@ -1464,7 +1599,7 @@
     async function cargarPreguntas() {
       const rows = await rpc('obtener_preguntas', {
         input_code: currentAccessCode,
-        cantidad: 20,
+        cantidad: 1000,
         filtro_seccion: null
       });
       return Array.isArray(rows) ? rows : [];
@@ -1602,6 +1737,7 @@
       caseCard.classList.add('hidden');
       quizCard.classList.add('hidden');
       resultCard.classList.add('hidden');
+      testHub.classList.add('hidden');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
@@ -2214,37 +2350,18 @@
     });
 
     caseBackBtn.addEventListener('click', exitCurrentCase);
-    quizBackBtn.addEventListener('click', showMenu);
-    resultBackBtn.addEventListener('click', showMenu);
+    quizBackBtn.addEventListener('click', showTestHub);
+    resultBackBtn.addEventListener('click', showTestHub);
 
     async function startTest() {
-      menuCard.classList.add('hidden');
-      historyCard.classList.add('hidden');
-      caseCard.classList.add('hidden');
-      quizCard.classList.remove('hidden');
-      resultCard.classList.add('hidden');
-      questionEl.textContent = 'Cargando preguntas…';
-      optionsEl.innerHTML = '';
-      feedbackEl.className = 'feedback hidden';
-      nextBtn.classList.add('hidden');
-
+      menuCard.classList.add('hidden');historyCard.classList.add('hidden');topicsCard.classList.add('hidden');
+      caseCard.classList.add('hidden');quizCard.classList.add('hidden');resultCard.classList.add('hidden');
+      testHub.classList.remove('hidden');testHubContent.classList.add('hidden');testHubStatus.textContent='Cargando preguntas…';
       try {
-        test = await cargarPreguntas();
-        if (!test.length) {
-          questionEl.textContent = 'No hay preguntas disponibles todavía.';
-          return;
-        }
-        current = 0;
-        score = 0;
-        scoredAnswered = 0;
-        annulled = 0;
-        answered = false;
-        renderQuestion();
-        markSectionSeen('tests');
-      } catch (error) {
-        console.error(error);
-        questionEl.textContent = 'No se han podido cargar las preguntas desde Supabase.';
-      }
+        testBank=await cargarPreguntas();
+        testBank.sort((a,b)=>Number(b.id)-Number(a.id));
+        showTestHub();markSectionSeen('tests');
+      } catch(error) {console.error(error);testHubStatus.textContent='No se han podido cargar las preguntas desde Supabase.';}
     }
 
     function renderQuestion() {
@@ -2337,11 +2454,24 @@
         const r = await corregirPregunta(q.id, selectedLetter);
         if (!r) throw new Error('Sin respuesta de corrección');
 
-        let communityStats = null;
-        try {
-          communityStats = await registrarVotoTest(q.id, selectedLetter);
-        } catch (statsError) {
-          console.warn('No se han podido cargar las estadísticas del test.', statsError);
+        const progress=readTestProgress(),previous=progress[String(q.id)];
+        const firstAttempt=!previous?.attempts;
+        let communityStats=null;
+        // La corrección se mantiene en Supabase, pero los repasos no vuelven a votar.
+        if (firstAttempt) {
+          try { communityStats=await registrarVotoTest(q.id,selectedLetter); }
+          catch (statsError) {console.warn('Estadísticas del test no disponibles.',statsError);}
+        }
+        if (r.puntua) {
+          const now=new Date().toISOString();
+          progress[String(q.id)]={
+            attempts:(previous?.attempts||0)+1,
+            firstCorrect:firstAttempt?Boolean(r.es_correcta):previous.firstCorrect,
+            mastered:Boolean(r.es_correcta)||Boolean(previous?.mastered),
+            lastCorrect:Boolean(r.es_correcta),lastAnswer:selectedLetter,
+            firstAt:previous?.firstAt||now,lastAt:now
+          };
+          writeTestProgress(progress);
         }
 
         const correctIndex = r.respuesta_correcta ? ['a','b','c','d'].indexOf(r.respuesta_correcta.toLowerCase()) : -1;
@@ -2509,7 +2639,7 @@
       }
     });
 
-    restartBtn.addEventListener('click', startTest);
+    restartBtn.addEventListener('click', showTestHub);
 
     // Permite la instalación como app sin almacenar respuestas ni datos de Supabase.
     if ('serviceWorker' in navigator && location.protocol === 'https:') {

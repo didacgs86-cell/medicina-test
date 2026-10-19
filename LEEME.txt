@@ -1,0 +1,10 @@
+URG ENCIAS365 - NUEVO MODO TEST
+
+1. Descomprime el ZIP.
+2. En GitHub, sustituye index.html, sw.js, manifest.webmanifest, README.md y las carpetas icons/ y assets/ por los archivos suministrados.
+3. Haz commit y espera el despliegue de GitHub Pages.
+4. Actualiza la página. Si usas la app instalada, ciérrala y vuelve a abrirla.
+
+NO necesitas modificar Supabase para el guardado local.
+AVISO: la función SQL obtener_preguntas puede imponer un límite de resultados propio. Se solicita cantidad=1000 en el frontend, pero si el backend limita a 20 habrá que modificarlo posteriormente.
+Los resultados guardados en el dispositivo no incluyen respuestas anteriores a la instalación de esta versión.
