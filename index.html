@@ -1029,6 +1029,7 @@
     <section id="menuCard" class="card hidden">
       <span class="tag">MENÚ PRINCIPAL</span>
       <h2 style="margin-top:14px">¿Qué quieres hacer?</h2>
+      <p class="small" style="color:#0f766e;font-weight:800">Versión Modo test V2 · 19/10/2026</p>
       <p class="small">Escoge cómo quieres aprender o repasar.</p>
 
       <aside class="about-365" aria-label="Significado de Urgencias365">
@@ -2644,7 +2645,7 @@
     // Permite la instalación como app sin almacenar respuestas ni datos de Supabase.
     if ('serviceWorker' in navigator && location.protocol === 'https:') {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js').catch(error => console.warn('Service worker:', error));
+        navigator.serviceWorker.register('./sw.js?v=4').then(reg=>reg.update()).catch(error => console.warn('Service worker:', error));
       });
     }
 

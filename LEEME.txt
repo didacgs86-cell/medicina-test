@@ -1,10 +1,7 @@
-URG ENCIAS365 - NUEVO MODO TEST
+URGENCIAS365 TEST V2 - COMPROBACIÓN DE VERSIÓN
 
-1. Descomprime el ZIP.
-2. En GitHub, sustituye index.html, sw.js, manifest.webmanifest, README.md y las carpetas icons/ y assets/ por los archivos suministrados.
-3. Haz commit y espera el despliegue de GitHub Pages.
-4. Actualiza la página. Si usas la app instalada, ciérrala y vuelve a abrirla.
-
-NO necesitas modificar Supabase para el guardado local.
-AVISO: la función SQL obtener_preguntas puede imponer un límite de resultados propio. Se solicita cantidad=1000 en el frontend, pero si el backend limita a 20 habrá que modificarlo posteriormente.
-Los resultados guardados en el dispositivo no incluyen respuestas anteriores a la instalación de esta versión.
+Sube todos los archivos y carpetas a la raíz de medicina-test y haz commit.
+Abre la web y comprueba en el menú principal el texto «Versión Modo test V2 · 19/10/2026».
+Si NO aparece, GitHub Pages está sirviendo una versión antigua (comprueba Settings > Pages y Actions).
+Si aparece pero no se abre el menú Test, informa del mensaje exacto.
+No hace falta modificar Supabase.
