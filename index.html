@@ -1079,6 +1079,14 @@
           </div>
           <div class="mode-arrow">Empezar test →</div>
         </button>
+
+        <a href="./Simulacion/" class="mode-card" style="text-decoration:none">
+          <div>
+            <div class="mode-title">Simulaciones</div>
+            <div class="mode-desc">Practica la interpretación de pruebas clínicas con simulaciones interactivas. Incluye el simulador educativo de gasometría.</div>
+          </div>
+          <div class="mode-arrow">Explorar simulaciones →</div>
+        </a>
       </div>
     </section>
 
@@ -2645,7 +2653,7 @@
     // Permite la instalación como app sin almacenar respuestas ni datos de Supabase.
     if ('serviceWorker' in navigator && location.protocol === 'https:') {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=4').then(reg=>reg.update()).catch(error => console.warn('Service worker:', error));
+        navigator.serviceWorker.register('./sw.js?v=5').then(reg=>reg.update()).catch(error => console.warn('Service worker:', error));
       });
     }
 

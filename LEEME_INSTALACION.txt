@@ -1,17 +1,14 @@
 URGENCIAS365 — INSTALACIÓN EN GITHUB PAGES
 
-1. Abre tu repositorio actual de GitHub.
-2. Haz una copia de seguridad de tu index.html actual.
-3. Copia el contenido del ZIP en la RAÍZ del repositorio, sustituyendo index.html.
-   Deben quedar index.html, manifest.webmanifest, sw.js y las carpetas assets/ e icons/.
-4. Haz commit de todos los archivos y espera al despliegue de GitHub Pages.
-5. Abre la web mediante HTTPS. En iPhone: Safari > Compartir > Añadir a pantalla de inicio.
-   En Android (Chrome): menú > Instalar aplicación o Añadir a pantalla de inicio.
+1. Descarga y descomprime el ZIP.
+2. En tu repositorio, haz una copia de seguridad del contenido actual.
+3. Sube TODO el contenido descomprimido a la raíz del repositorio y acepta sustituir los archivos con el mismo nombre. Sube los archivos y carpetas, no el ZIP como único archivo.
+4. Mantén exactamente estas rutas: index.html, sw.js, manifest.webmanifest, assets/, icons/ y Simulacion/. Dentro de Simulacion/ deben quedar index.html y Gasometria/index.html.
+5. Haz commit y espera a que GitHub Pages termine de publicar.
+6. Abre la aplicación por HTTPS. En iPhone: Safari > Compartir > Añadir a pantalla de inicio. En Android: menú de Chrome > Instalar aplicación o Añadir a pantalla de inicio.
 
-NOTAS:
-- Mantiene el código de preguntas, votos, Supabase y explicaciones en tarjetas del index proporcionado.
-- No requiere SQL ni editar Supabase.
-- El icono y la cabecera deberían funcionar con rutas relativas incluso si GitHub Pages está bajo /nombre-repositorio/.
-- La interfaz básica puede abrirse desde caché tras haberla visitado, pero los casos y votaciones necesitan conexión a Supabase.
-- No se incluyen datos clínicos almacenados en caché.
-- Si existe un service worker anterior en el repositorio, conviene revisar su compatibilidad antes de publicar.
+El simulador está disponible desde Menú principal > Simulaciones > Gasometría y equilibrio ácido-base.
+
+Se conserva el contenido de la app que proporcionaste (casos, votos, Supabase, temas y test). No requiere SQL ni editar Supabase. Las simulaciones funcionan sin servicios externos y no almacenan los valores introducidos. Los casos y votaciones existentes siguen necesitando conexión a Supabase.
+
+NOTA CLÍNICA: módulo educativo, no diagnóstico ni prescripción. Contrasta unidades, muestra, valores de referencia y contexto clínico; el cálculo del osmolal gap no descarta intoxicación.

@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#0b756b">
+<title>Simulador de gasometría | Urgencias365</title>
+<style>
+:root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#183247;background:#f3f7f6;font-synthesis:none}*{box-sizing:border-box}body{margin:0;padding:18px 14px 42px}.wrap{max-width:1120px;margin:auto}.nav{display:flex;justify-content:space-between;gap:14px;margin:2px 0 16px}.nav a{color:#0b756b;font-weight:700;text-decoration:none}.nav a:hover{text-decoration:underline}.intro{background:#fff;border:1px solid #d9e5e1;border-radius:17px;padding:21px 24px;margin-bottom:14px}.eyebrow{font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;color:#0b756b;font-weight:800}.intro h1{font-size:clamp(1.55rem,4vw,2.15rem);margin:7px 0}.intro p{color:#5b6d78;line-height:1.6;margin:6px 0 0;max-width:950px}.notice{background:#fff8e8;border:1px solid #ead6a1;border-radius:12px;padding:12px 14px;margin:0 0 14px;color:#624918;font-size:.86rem;line-height:1.55}.grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(330px,.9fr);gap:14px;align-items:start}.panel{background:#fff;border:1px solid #d9e5e1;border-radius:17px;padding:18px;min-width:0}.panel h2{font-size:1.02rem;margin:0 0 12px}.group{padding-top:13px;margin-top:13px;border-top:1px solid #e5ece9}.group h3{font-size:.82rem;color:#537067;margin:0 0 9px}.fields{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.field label{display:block;font-size:.77rem;color:#536873;line-height:1.35;margin:0 0 4px}.field input,.field select{width:100%;min-width:0;border:1px solid #cbd8d4;border-radius:9px;background:#fff;color:#183247;padding:9px 10px;font:inherit;font-size:.9rem}.field input:focus-visible,.field select:focus-visible{outline:3px solid #7bc9bb;outline-offset:1px}.hint{font-size:.7rem;color:#71818a;margin-top:3px;line-height:1.35}.summary{padding:14px;border-radius:12px;background:#eaf5f2;border-left:4px solid #0b756b;margin-bottom:12px}.summary strong{font-size:1.14rem;display:block}.summary p{margin:6px 0 0;color:#445d66;line-height:1.5;font-size:.87rem}.metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:10px 0}.metric{padding:10px;background:#f2f7f6;border-radius:11px;min-width:0}.metric span{display:block;color:#60727a;font-size:.72rem}.metric b{display:block;font-size:1rem;margin:4px 0;overflow-wrap:anywhere}.metric small{display:block;color:#60727a;font-size:.68rem;line-height:1.35}.line{padding:9px 0;border-bottom:1px solid #edf1ef;font-size:.84rem;line-height:1.5}.line strong{display:block;margin-bottom:2px}.causes{font-size:.83rem;line-height:1.55;margin-top:12px;color:#4d6069}.causes strong{color:#183247}.warnings{color:#85530a;background:#fff8e8;padding:9px 11px;border-radius:9px;margin-top:11px;font-size:.8rem;line-height:1.5}.warnings:empty{display:none}.fine{font-size:.72rem;color:#65757d;line-height:1.5;margin-top:12px}.details{margin-top:12px;border-top:1px solid #e5ece9;padding-top:10px}.details summary{cursor:pointer;color:#0b756b;font-weight:700;font-size:.83rem}.details p,.details li{color:#596b74;font-size:.78rem;line-height:1.55}.sources{font-size:.73rem;color:#687982;margin-top:11px}.sources a{color:#0b756b}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}.btn{border:1px solid #0b756b;background:#0b756b;color:white;border-radius:9px;padding:9px 14px;font:inherit;font-weight:700;cursor:pointer}.btn.secondary{background:white;color:#0b756b}.btn:focus-visible{outline:3px solid #74c6b8;outline-offset:2px}
+@media(max-width:800px){.grid{grid-template-columns:1fr}}@media(max-width:490px){body{padding:12px 10px 32px}.intro,.panel{padding:15px}.fields{grid-template-columns:repeat(2,minmax(0,1fr))}.metrics{gap:5px}.metric{padding:8px 6px}.metric b{font-size:.9rem}}
+</style>
+</head>
+<body><main class="wrap">
+<nav class="nav" aria-label="Navegación"><a href="../">← Volver a simulaciones</a><a href="../../">Urgencias365</a></nav>
+<section class="intro"><div class="eyebrow">Simulación clínica · herramienta docente</div><h1>Gasometría y equilibrio ácido-base</h1><p>Selecciona si la muestra es arterial o venosa e introduce los datos disponibles. La herramienta revisa el equilibrio ácido-base, anion gap, osmolal gap y lactato; si añades resultados de co-oximetría, muestra Hb, carboxihemoglobina y metahemoglobina.</p></section>
+<div class="notice"><strong>Uso educativo:</strong> la interpretación automática no sustituye la valoración clínica ni las referencias del laboratorio. Las fórmulas de compensación son aproximaciones. La estimación de bicarbonato <strong>no es una recomendación de tratamiento ni una dosis</strong>; un osmolal gap normal no excluye una intoxicación por alcoholes tóxicos.</div>
+<div class="grid">
+<section class="panel" aria-labelledby="inputsTitle"><h2 id="inputsTitle">Datos de entrada</h2>
+<div class="group" style="margin-top:0;padding-top:0;border-top:0"><h3>Tipo de muestra y equilibrio ácido-base</h3><div class="fields">
+<div class="field"><label for="g-specimen">Tipo de muestra</label><select id="g-specimen"><option value="arterial">Arterial</option><option value="venous">Venosa periférica/central</option></select></div>
+<div class="field"><label for="g-ph">pH</label><input id="g-ph" type="number" step="0.01" min="6" max="8" value="7.26"></div>
+<div class="field"><label for="g-pco2" id="g-pco2-label">PaCO₂ · mmHg</label><input id="g-pco2" type="number" step="1" min="1" value="23"></div>
+<div class="field"><label for="g-hco3">HCO₃⁻ gasométrico · mmol/L</label><input id="g-hco3" type="number" step="0.1" min="1" value="10"><div class="hint">Habitualmente calculado a partir de pH y PaCO₂.</div></div>
+<div class="field"><label for="g-duration">Duración respiratoria</label><select id="g-duration"><option value="unknown">No conocida</option><option value="acute">Aguda</option><option value="chronic">Crónica</option></select></div>
+</div></div>
+<div class="group"><h3>Oxigenación y co-oximetría (opcionales)</h3><div class="fields">
+<div class="field"><label for="g-po2" id="g-po2-label">PaO₂ · mmHg</label><input id="g-po2" type="number" step="1" min="0" placeholder="No disponible"></div>
+<div class="field"><label for="g-spo2">SpO₂ · pulsioxímetro · %</label><input id="g-spo2" type="number" step="0.1" min="0" max="100" placeholder="No disponible"></div>
+<div class="field"><label for="g-hb">Hb total · co-oximetría · g/dL</label><input id="g-hb" type="number" step="0.1" min="0" placeholder="No disponible"></div>
+<div class="field"><label for="g-cohb">Carboxihemoglobina · COHb · %</label><input id="g-cohb" type="number" step="0.1" min="0" max="100" placeholder="No disponible"></div>
+<div class="field"><label for="g-smoker">Tabaquismo actual</label><select id="g-smoker"><option value="unknown">No conocido</option><option value="no">No fumador</option><option value="yes">Fumador</option></select></div>
+<div class="field"><label for="g-methb">Metahemoglobina · MetHb · %</label><input id="g-methb" type="number" step="0.1" min="0" max="100" placeholder="No disponible"></div>
+<div class="field"><label for="g-o2hb">Oxihemoglobina · O₂Hb · %</label><input id="g-o2hb" type="number" step="0.1" min="0" max="100" placeholder="No disponible"></div>
+</div><div class="hint">COHb, MetHb, Hb y O₂Hb se miden con co-oximetría; una SpO₂ convencional no los cuantifica de forma fiable.</div></div>
+<div class="group"><h3>Bioquímica, anion gap y lactato</h3><div class="fields">
+<div class="field"><label for="g-na">Na⁺ · mmol/L</label><input id="g-na" type="number" step="1" value="140"></div>
+<div class="field"><label for="g-cl">Cl⁻ · mmol/L</label><input id="g-cl" type="number" step="1" value="104"></div>
+<div class="field"><label for="g-chemhco3">CO₂ total/HCO₃⁻ bioquímico · mmol/L</label><input id="g-chemhco3" type="number" step="0.1" value="10"><div class="hint">Preferible para calcular el anion gap.</div></div>
+<div class="field"><label for="g-alb">Albúmina · g/L</label><input id="g-alb" type="number" step="1" value="35"></div>
+<div class="field"><label for="g-agref">AG de referencia local · mmol/L</label><input id="g-agref" type="number" step="0.1" value="12"></div>
+<div class="field"><label for="g-lactate">Lactato · mmol/L</label><input id="g-lactate" type="number" step="0.1" value="6"></div>
+</div></div>
+<div class="group"><h3>Osmolalidad</h3><div class="fields">
+<div class="field"><label for="g-glucose">Glucosa · mg/dL</label><input id="g-glucose" type="number" step="1" value="120"></div>
+<div class="field"><label for="g-urea">Urea · mg/dL</label><input id="g-urea" type="number" step="1" value="48"></div>
+<div class="field"><label for="g-osmmeas">Osmolalidad medida · mOsm/kg</label><input id="g-osmmeas" type="number" step="0.1" value="300"></div>
+<div class="field"><label for="g-ethanol">Etanol · mg/dL · opcional</label><input id="g-ethanol" type="number" step="1" value="0"></div>
+</div></div>
+<div class="group"><h3>Déficit teórico de bicarbonato</h3><div class="fields">
+<div class="field"><label for="g-weight">Peso · kg</label><input id="g-weight" type="number" step="0.1" value="70"></div>
+<div class="field"><label for="g-target">HCO₃⁻ objetivo · mmol/L</label><input id="g-target" type="number" step="0.1" value="24"></div>
+</div><div class="hint">El objetivo es editable; no presupone que normalizar el bicarbonato sea apropiado.</div></div>
+<div class="actions"><button class="btn secondary" id="resetBtn" type="button">Restablecer ejemplo</button></div>
+</section>
+<section class="panel" aria-labelledby="resultTitle"><h2 id="resultTitle">Interpretación orientativa</h2>
+<div class="summary" aria-live="polite"><strong id="g-primary">Calculando…</strong><p id="g-compensation"></p></div>
+<div class="metrics"><div class="metric"><span>Anion gap corregido</span><b id="g-ag">—</b><small id="g-ag-note"></small></div><div class="metric"><span>Osmolal gap</span><b id="g-osmgap">—</b><small id="g-osm-note"></small></div><div class="metric"><span>Lactato</span><b id="g-lactate-out">—</b><small id="g-lactate-note"></small></div></div>
+<div class="line"><strong>Oxigenación y co-oximetría</strong><span id="g-oxygen-out">Añade valores opcionales para mostrarlos aquí.</span><div class="fine" id="g-oxygen-note"></div></div>
+<div class="line"><strong>Déficit teórico hasta objetivo</strong><span id="g-deficit">—</span><div class="fine" id="g-deficit-note"></div></div>
+<div class="line"><strong>Coherencia interna</strong><span id="g-consistency"></span></div>
+<div class="causes"><strong>Causas que pueden encajar según el patrón:</strong><br><span id="g-causes"></span></div>
+<div class="warnings" id="g-warning" role="status" aria-live="polite"></div>
+<details class="details"><summary>Reglas y fórmulas utilizadas</summary><ul>
+<li>Acidosis metabólica: fórmula de Winter, PaCO₂ esperada = 1,5 × HCO₃⁻ + 8 ± 2 mmHg. Es una regla orientativa para gasometría arterial; no conviertas directamente PvCO₂ en PaCO₂.</li>
+<li>Alcalosis metabólica: PaCO₂ aumenta aproximadamente 0,6–0,75 mmHg por cada 1 mmol/L de aumento del HCO₃⁻ respecto a 24; la compensación suele no superar ~55 mmHg.</li>
+<li>Trastorno respiratorio: cambio esperado del HCO₃⁻ por cada 10 mmHg de cambio de PaCO₂ desde 40: acidosis aguda +1–2, crónica +3–4; alcalosis aguda −1–2, crónica −4–5 mmol/L.</li>
+<li>AG = Na − (Cl + CO₂ total/HCO₃⁻ de bioquímica). Corrección por albúmina = AG + 2,5 × (4 − albúmina en g/dL). Usar el rango de referencia del laboratorio.</li>
+<li>Relación delta = (AG corregido − AG de referencia) / (24 − HCO₃⁻ bioquímico). Valores &lt;1 pueden sugerir acidosis metabólica de gap normal concomitante; &gt;2 pueden sugerir alcalosis metabólica o bicarbonato basal elevado. Es orientativa.</li>
+<li>Osmolalidad calculada aproximada = 2 × Na + glucosa/18 + urea/6 + etanol/4,6; glucosa, urea y etanol en mg/dL. Osmolal gap = medida − calculada. Las fórmulas y umbrales varían entre laboratorios.</li>
+<li>El pH y pCO₂ venosos pueden diferir de los arteriales. La muestra venosa sirve en escenarios seleccionados para valorar pH/CO₂, pero PvO₂ no sustituye a PaO₂ para valorar oxigenación arterial.</li>
+<li>La co-oximetría cuantifica Hb y dishemoglobinas. La pulsioximetría convencional puede ser inexacta con COHb o MetHb; interpreta las cifras con exposición, síntomas y rango del laboratorio.</li>
+<li>Déficit teórico = 0,5 × peso (kg) × (HCO₃⁻ objetivo − HCO₃⁻ medido). Es una estimación simplificada del espacio de distribución y no debe interpretarse como cantidad a administrar.</li>
+</ul></details>
+<div class="sources">Bases metodológicas: <a href="https://www.merckmanuals.com/professional/nephrology/acid-base-regulation-and-disorders/acid-base-regulation" target="_blank" rel="noopener">Merck Manual Professional, compensación ácido-base</a>; <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10101555/" target="_blank" rel="noopener">revisión en pacientes críticos, 2023</a>; <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC2390580/" target="_blank" rel="noopener">limitaciones del osmolal gap</a>; <a href="https://www.cdc.gov/carbon-monoxide/hcp/clinical-guidance/index.html" target="_blank" rel="noopener">CDC, intoxicación por monóxido de carbono</a>; <a href="https://www.merckmanuals.com/professional/pulmonary-disorders/tests-of-pulmonary-function-pft/measurement-of-gas-exchange" target="_blank" rel="noopener">Merck, co-oximetría y dishemoglobinas</a>.</div>
+<p class="fine">La herramienta no guarda los valores introducidos. No proporciona diagnósticos diferenciales exhaustivos ni sustituye la evaluación de la historia clínica, exploración, evolución y pruebas complementarias.</p>
+</section></div></main>
+<script>
+(()=>{
+ const ids=['g-specimen','g-ph','g-pco2','g-hco3','g-duration','g-po2','g-spo2','g-hb','g-cohb','g-smoker','g-methb','g-o2hb','g-na','g-cl','g-chemhco3','g-alb','g-agref','g-lactate','g-glucose','g-urea','g-osmmeas','g-ethanol','g-weight','g-target'];
+ const $=id=>document.getElementById(id), n=id=>{const x=parseFloat($(id).value);return Number.isFinite(x)?x:null}, out=(id,s)=>$(id).textContent=s;
+ const f=(x,d=1)=>Number.isFinite(x)?x.toFixed(d):'—';
+ const causesBy={
+  metAcidHigh:'Gap alto: considera acidosis láctica, cetosis (diabética, alcohólica o por ayuno), insuficiencia renal/uremia y tóxicos/fármacos según historia. El gap no identifica por sí solo la causa.',
+  metAcidNormal:'Gap no elevado: considera pérdida digestiva o renal de bicarbonato, acidosis tubular renal, carga de cloruro y otros procesos; correlaciona con potasio, función renal y contexto.',
+  metAlk:'Vómitos o aspiración nasogástrica, diuréticos, depleción de cloro/volumen, hipopotasemia o exceso mineralocorticoide, entre otras posibilidades.',
+  respAcid:'Hipoventilación por enfermedad pulmonar, fármacos/sedantes, alteración neurológica, debilidad neuromuscular o alteración de la pared torácica, según contexto.',
+  respAlk:'Hipoxemia, infección/sepsis, embolia pulmonar, dolor, embarazo, hepatopatía, trastorno del SNC o salicilatos, entre otras posibilidades.'
+ };
+ function calc(){
+  const specimen=$('g-specimen').value,ph=n('g-ph'),co=n('g-pco2'),h=n('g-hco3'),po2=n('g-po2'),spo2=n('g-spo2'),hb=n('g-hb'),cohb=n('g-cohb'),methb=n('g-methb'),o2hb=n('g-o2hb'),smoker=$('g-smoker').value,na=n('g-na'),cl=n('g-cl'),chem=n('g-chemhco3'),alb=n('g-alb'),agref=n('g-agref'),lac=n('g-lactate'),glu=n('g-glucose'),urea=n('g-urea'),osm=n('g-osmmeas'),eth=n('g-ethanol')||0,wt=n('g-weight'),target=n('g-target'),duration=$('g-duration').value;
+  let main='Introduce pH, PaCO₂ y HCO₃⁻',comp='La interpretación aparecerá al completar los datos.',cause='';
+  let hhdiff=null,primary='';
+  if(ph!==null&&co!==null&&h!==null){
+   const state=ph<7.35?'acidemia':ph>7.45?'alcalemia':'pH en rango';
+   if(ph<7.35){
+    if(h<24&&co>40){primary='mixedAcid';main='Posible trastorno mixto: acidosis metabólica y respiratoria';}
+    else if(h<24){primary='metAcid';main='Acidosis metabólica';}
+    else if(co>40){primary='respAcid';main='Acidosis respiratoria';}
+    else{main='Patrón discordante: revisar valores y muestra';}
+   }else if(ph>7.45){
+    if(h>24&&co<40){primary='mixedAlk';main='Posible trastorno mixto: alcalosis metabólica y respiratoria';}
+    else if(h>24){primary='metAlk';main='Alcalosis metabólica';}
+    else if(co<40){primary='respAlk';main='Alcalosis respiratoria';}
+    else{main='Patrón discordante: revisar valores y muestra';}
+   }else{
+    if(ph<=7.40&&h<24){primary='metAcid';main='pH en rango, con tendencia ácida: posible acidosis metabólica compensada';}
+    else if(ph<=7.40&&co>40){primary='respAcid';main='pH en rango, con tendencia ácida: posible acidosis respiratoria compensada';}
+    else if(ph>7.40&&h>24){primary='metAlk';main='pH en rango, con tendencia alcalina: posible alcalosis metabólica compensada';}
+    else if(ph>7.40&&co<40){primary='respAlk';main='pH en rango, con tendencia alcalina: posible alcalosis respiratoria compensada';}
+    else main='pH en rango: sin patrón primario claro';
+   }
+   const pstate=state;
+   let expected='',assessment='';
+   if(primary==='metAcid'||primary==='mixedAcid'){
+    const mid=1.5*h+8,lo=mid-2,hi=mid+2; expected=`Winter: PaCO₂ esperada ${f(mid)} mmHg (rango ${f(lo)}–${f(hi)}); observada ${f(co)}.`;
+    assessment=co<lo?'Por debajo del rango: sugiere alcalosis respiratoria concomitante.':co>hi?'Por encima del rango: sugiere acidosis respiratoria concomitante.':'Dentro del rango de compensación esperado.';cause=causesBy.metAcidHigh;
+   }else if(primary==='metAlk'||primary==='mixedAlk'){
+    const dh=h-24,lo=Math.min(55,40+0.6*dh),hi=Math.min(55,40+0.75*dh);expected=`PaCO₂ esperada aproximadamente ${f(lo)}–${f(hi)} mmHg (límite orientativo de compensación ~55); observada ${f(co)}.`;
+    assessment=co<lo?'Por debajo del rango: sugiere alcalosis respiratoria concomitante.':co>hi?'Por encima del rango: sugiere acidosis respiratoria concomitante.':'Compatible con compensación respiratoria esperada.';cause=causesBy.metAlk;
+   }else if(primary==='respAcid'){
+    const d=(co-40)/10,acuteLo=24+d,acuteHi=24+2*d,chronicLo=24+3*d,chronicHi=24+4*d;
+    const lo=duration==='acute'?acuteLo:duration==='chronic'?chronicLo:acuteLo,hi=duration==='acute'?acuteHi:duration==='chronic'?chronicHi:chronicHi;
+    expected=duration==='acute'?`HCO₃⁻ esperado agudo ${f(acuteLo)}–${f(acuteHi)} mmol/L (observado ${f(h)}).`:duration==='chronic'?`HCO₃⁻ esperado crónico ${f(chronicLo)}–${f(chronicHi)} mmol/L (observado ${f(h)}).`:`HCO₃⁻ esperado: agudo ${f(acuteLo)}–${f(acuteHi)}; crónico ${f(chronicLo)}–${f(chronicHi)} mmol/L (observado ${f(h)}).`;
+    assessment=h<lo?'Por debajo de lo esperado: posible acidosis metabólica añadida o compensación aún no desarrollada.':h>hi?'Por encima de lo esperado: posible alcalosis metabólica añadida.':'Compatible con compensación para el tiempo seleccionado; la evolución importa.';cause=causesBy.respAcid;
+   }else if(primary==='respAlk'){
+    const d=(40-co)/10,acuteLo=24-2*d,acuteHi=24-d,chronicLo=24-5*d,chronicHi=24-4*d;
+    const lo=duration==='acute'?acuteLo:duration==='chronic'?chronicLo:chronicLo,hi=duration==='acute'?acuteHi:duration==='chronic'?chronicHi:acuteHi;
+    expected=duration==='acute'?`HCO₃⁻ esperado agudo ${f(acuteLo)}–${f(acuteHi)} mmol/L (observado ${f(h)}).`:duration==='chronic'?`HCO₃⁻ esperado crónico ${f(chronicLo)}–${f(chronicHi)} mmol/L (observado ${f(h)}).`:`HCO₃⁻ esperado: crónico ${f(chronicLo)}–${f(chronicHi)}; agudo ${f(acuteLo)}–${f(acuteHi)} mmol/L (observado ${f(h)}).`;
+    assessment=h<lo?'Por debajo de lo esperado: posible acidosis metabólica concomitante.':h>hi?'Por encima de lo esperado: posible alcalosis metabólica concomitante o compensación crónica.':'Compatible con compensación para el tiempo seleccionado; la evolución importa.';cause=causesBy.respAlk;
+   }else if(primary==='mixedAcid'||primary==='mixedAlk'){
+    expected='Las dos variables cambian en dirección compatible con trastornos primarios simultáneos; no puede asumirse que sea una compensación simple.';assessment='Revisar historia, valores previos y repetir/confirmar resultados discordantes.';cause=primary==='mixedAcid'?'Puede coexistir hipoventilación con acidosis metabólica (p. ej., shock, insuficiencia renal, cetosis o lactato), entre otras combinaciones.':'Puede coexistir hiperventilación con alcalosis metabólica; valorar contexto y datos previos.';
+   }else{expected='No se puede asignar una compensación simple con este patrón.';assessment='Comprueba coherencia, unidades, tipo de muestra y trastorno mixto.';}
+   out('g-primary',`${main} · ${pstate}`);out('g-compensation',`${expected} ${assessment}${specimen==='venous'?' Nota: la regla de compensación usa PaCO₂ arterial; el PvCO₂ venoso puede diferir y no debe sustituirse sin contexto.':''}`);
+   const hh=0.03*co*Math.pow(10,ph-6.1);hhdiff=Math.abs(hh-h);out('g-consistency',`HCO₃⁻ calculado por Henderson–Hasselbalch: ${f(hh)} mmol/L; diferencia frente al valor introducido: ${f(hhdiff)}.`);
+  }else{out('g-primary',main);out('g-compensation',comp);out('g-consistency','');}
+  let ag=null,agc=null,delta=null;
+  if(na!==null&&cl!==null&&chem!==null){ag=na-(cl+chem);agc=alb===null?ag:ag+2.5*(4-alb/10);out('g-ag',`${f(agc)} mmol/L`);let note=`Sin corregir ${f(ag)} · referencia local ${f(agref??12)}${alb===null?' · sin corrección por albúmina':''}`;
+   if(primary.startsWith('metAcid')||primary==='mixedAcid'){const denom=24-chem;if(denom>0){delta=(agc-(agref??12))/denom;let interp=delta<1?'<1: puede sugerir componente de gap normal concomitante.':delta<=2?'1–2: compatible con predominio de acidosis de gap alto.':'>2: puede sugerir alcalosis metabólica concomitante o HCO₃⁻ basal elevado.';note=`Delta ratio ${f(delta,2)} · ${interp} Interpretar con el valor basal y el método local.`}cause=agc>(agref??12)?causesBy.metAcidHigh:causesBy.metAcidNormal;}
+   out('g-ag-note',note);
+  }else{out('g-ag','—');out('g-ag-note','Completa Na⁺, Cl⁻ y CO₂ total/HCO₃⁻ de bioquímica.');}
+  if(!cause){if(primary==='metAlk'||primary==='mixedAlk')cause=causesBy.metAlk;else if(primary==='respAcid')cause=causesBy.respAcid;else if(primary==='respAlk')cause=causesBy.respAlk;else cause='Correlaciona con el contexto clínico, electrolitos, función renal y evolución.';}
+  if(lac!==null&&lac>2&&cause.includes('Gap alto'))cause+=` Lactato ${f(lac)} mmol/L: puede contribuir al gap; no excluye causas simultáneas.`;
+  out('g-causes',cause);
+  const calcOsm=na!==null&&glu!==null&&urea!==null?2*na+glu/18+urea/6+eth/4.6:null,og=calcOsm!==null&&osm!==null?osm-calcOsm:null;
+  out('g-osmgap',og===null?'—':`${f(og)} mOsm/kg`);out('g-osm-note',calcOsm===null?'Completa Na⁺, glucosa y urea.':`Calculada ${f(calcOsm)} · ${og>10?'sobre el umbral orientativo frecuente de 10':'no elevado con el umbral orientativo frecuente de 10'}. La fórmula local puede variar.`);
+  out('g-lactate-out',lac===null?'—':`${f(lac)} mmol/L`);out('g-lactate-note',lac===null?'Introduce lactato':lac>2?'Por encima de 2 mmol/L; umbral orientativo, depende del laboratorio.':'No elevado con umbral orientativo >2 mmol/L.');
+  const deficit=wt!==null&&target!==null&&h!==null?0.5*wt*Math.max(0,target-h):null;out('g-deficit',deficit===null?'Completa peso y bicarbonato.':`${f(deficit,0)} mmol (estimación simplificada)`);out('g-deficit-note',deficit===null?'':`Cálculo: 0,5 × ${f(wt,1)} kg × max(0, ${f(target,1)} − ${f(h,1)}). No representa dosis ni indica administrar bicarbonato.`);
+  const warns=[];if(hhdiff!==null&&hhdiff>2.5)warns.push('pH, PaCO₂ y HCO₃⁻ no concuerdan bien: verifica muestra, unidades y valores introducidos.');if(og!==null&&og>10)warns.push('Osmolal gap elevado e inespecífico; uno normal tampoco excluye alcoholes tóxicos. Ante sospecha, la valoración urgente no debe retrasarse por este cálculo.');if(agc!==null&&alb===null)warns.push('No se corrigió el anion gap por albúmina porque no se introdujo su valor.');if(chem===null&&agc!==null)warns.push('Para el anion gap se está usando bicarbonato de gasometría si no hay CO₂ total bioquímico.');
+  if(specimen==='venous')warns.push('Muestra venosa: PvO₂ no valora la oxigenación arterial. El pH/PvCO₂ difieren de los arteriales; interpreta con cautela cualquier fórmula basada en PaCO₂.');
+  if(cohb!==null){const threshold=smoker==='no'?2:smoker==='yes'?9:null;if(threshold!==null&&cohb>=threshold)warns.push(`COHb ${f(cohb)}%: por encima del umbral que CDC indica que apoya exposición a CO (${threshold}% según tabaquismo); los niveles no estiman por sí solos gravedad y bajan tras cesar la exposición.`);else if(smoker==='unknown'&&cohb>=2)warns.push('COHb introducida: interpreta con tabaquismo, exposición y tiempo transcurrido; la cifra aislada no mide gravedad.');}
+  const oxy=[];if(po2!==null)oxy.push(`${specimen==='arterial'?'PaO₂':'PvO₂'} ${f(po2,0)} mmHg`);if(spo2!==null)oxy.push(`SpO₂ ${f(spo2)}%`);if(hb!==null)oxy.push(`Hb ${f(hb)} g/dL`);if(cohb!==null)oxy.push(`COHb ${f(cohb)}%`);if(methb!==null)oxy.push(`MetHb ${f(methb)}%`);if(o2hb!==null)oxy.push(`O₂Hb ${f(o2hb)}%`);out('g-oxygen-out',oxy.length?oxy.join(' · '):'Añade valores opcionales para mostrarlos aquí.');
+  let oxyNote='';if(specimen==='venous'&&po2!==null)oxyNote='PvO₂ no sustituye a PaO₂ para evaluar oxigenación arterial.';if(cohb!==null||methb!==null)oxyNote+=(oxyNote?' ':'')+'COHb/MetHb requieren co-oximetría; la SpO₂ convencional puede ser inexacta si están elevadas.';if(methb!==null&&methb>1.5)oxyNote+=(oxyNote?' ':'')+'MetHb por encima de 1,5%: verifica el rango del laboratorio y correlaciona; el simulador no asigna gravedad ni tratamiento.';out('g-oxygen-note',oxyNote);
+  $('g-pco2-label').textContent=(specimen==='arterial'?'PaCO₂':'PvCO₂')+' · mmHg';$('g-po2-label').textContent=(specimen==='arterial'?'PaO₂':'PvO₂')+' · mmHg';
+  out('g-warning',warns.join(' '));
+ }
+ ids.forEach(id=>{$(id).addEventListener('input',calc);$(id).addEventListener('change',calc)});calc();
+ $('resetBtn').addEventListener('click',()=>{const defaults={'g-specimen':'arterial','g-ph':'7.26','g-pco2':'23','g-hco3':'10','g-duration':'unknown','g-po2':'','g-spo2':'','g-hb':'','g-cohb':'','g-smoker':'unknown','g-methb':'','g-o2hb':'','g-na':'140','g-cl':'104','g-chemhco3':'10','g-alb':'35','g-agref':'12','g-lactate':'6','g-glucose':'120','g-urea':'48','g-osmmeas':'300','g-ethanol':'0','g-weight':'70','g-target':'24'};for(const [id,v] of Object.entries(defaults))$(id).value=v;calc();});
+})();
+</script></body></html>

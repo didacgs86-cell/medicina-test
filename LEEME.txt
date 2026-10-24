@@ -1,7 +1,7 @@
-URGENCIAS365 TEST V2 - COMPROBACIÓN DE VERSIÓN
+URGencias365 — PAQUETE CON SIMULADOR EDUCATIVO DE GASOMETRÍA
 
-Sube todos los archivos y carpetas a la raíz de medicina-test y haz commit.
-Abre la web y comprueba en el menú principal el texto «Versión Modo test V2 · 19/10/2026».
-Si NO aparece, GitHub Pages está sirviendo una versión antigua (comprueba Settings > Pages y Actions).
-Si aparece pero no se abre el menú Test, informa del mensaje exacto.
-No hace falta modificar Supabase.
+Incluye los archivos actuales de la app y una nueva sección Simulacion/.
+
+Para instalar, descomprime el ZIP y sube TODO su contenido a la raíz del repositorio GitHub que publica Urgencias365, conservando las carpetas assets/, icons/ y Simulacion/. El index.html debe quedar en la raíz y Simulacion/ a su mismo nivel. No subas el ZIP como único archivo.
+
+La nueva ruta es Simulacion/Gasometria/. El simulador es docente y no proporciona diagnóstico ni pautas de tratamiento. No requiere cambios de SQL ni de Supabase.
